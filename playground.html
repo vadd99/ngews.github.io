@@ -620,7 +620,133 @@
     </div>
 
     <script>
-        // EXPANDABLE SEARCH LOGIC
+        // 1. Dapatkan ID Video dari URL parameter (?id=X)
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoId = parseInt(urlParams.get('id'));
+
+        // DOM Elements untuk Halaman Video
+        const videoPlayer = document.getElementById('mainVideoPlayer');
+        const videoTitleEl = document.querySelector('.video-title');
+        const creatorNameEl = document.querySelector('.creator-name');
+        const creatorAvatarEl = document.querySelector('.creator-avatar');
+        const breadcrumbCurrent = document.querySelector('.breadcrumb span:last-child');
+        
+        // DOM Elements untuk Controls
+        const videoPlayerWrapper = document.getElementById('videoPlayerWrapper');
+        const bottomPlayBtn = document.getElementById('bottomPlayBtn');
+        const bottomPlayIcon = document.getElementById('bottomPlayIcon');
+        const timelineProgress = document.getElementById('timelineProgress');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const timelineContainer = document.getElementById('timelineContainer');
+
+        let mockVideos = [];
+        const playSVG = `<path d="M8 5v14l11-7z"></path>`;
+        const pauseSVG = `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>`;
+
+        // 2. Ambil data dari postingan.json
+        async function muatHalamanVideo() {
+            try {
+                const response = await fetch('./postingan.json');
+                mockVideos = await response.json();
+                
+                // Cari video yang ID-nya cocok dengan parameter URL
+                const videoData = mockVideos.find(v => v.id === videoId);
+                
+                if (videoData) {
+                    // Update Konten Halaman sesuai data JSON
+                    videoTitleEl.textContent = videoData.title;
+                    breadcrumbCurrent.textContent = videoData.title;
+                    creatorNameEl.innerHTML = `${videoData.channel} <span class="creator-verified"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg></span>`;
+                    creatorAvatarEl.src = videoData.avatar;
+                    
+                    // Set Video Source dan Poster (Thumbnail)
+                    videoPlayer.src = videoData.videoUrl;
+                    videoPlayer.poster = videoData.thumbnail;
+                    
+                    // Setup Video Controller asli
+                    inisialisasiKontrolVideo();
+                } else {
+                    // Jika ID tidak ditemukan di JSON
+                    videoTitleEl.textContent = "Video Tidak Ditemukan";
+                }
+
+                // Render rekomendasi video serupa (kecuali video yang sedang diputar)
+                const videoSerupa = mockVideos.filter(v => v.id !== videoId);
+                renderVideos(videoSerupa);
+
+            } catch (error) {
+                console.error("Gagal memuat data video:", error);
+            }
+        }
+
+        // 3. Logika Pengendali Pemutar Video Asli
+        function inisialisasiKontrolVideo() {
+            function formatTime(seconds) {
+                const m = Math.floor(seconds / 60);
+                const s = Math.floor(seconds % 60);
+                return `${m}:${s < 10 ? '0' : ''}${s}`;
+            }
+
+            bottomPlayBtn.addEventListener('click', () => {
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                    bottomPlayIcon.innerHTML = pauseSVG;
+                } else {
+                    videoPlayer.pause();
+                    bottomPlayIcon.innerHTML = playSVG;
+                }
+            });
+
+            // Update Timeline Progress bar saat video berjalan
+            videoPlayer.addEventListener('timeupdate', () => {
+                const persentase = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                timelineProgress.style.width = `${persentase}%`;
+                timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(videoPlayer.duration || 0)}`;
+            });
+
+            // Klik pada timeline untuk melompat menit video
+            timelineContainer.addEventListener('click', (e) => {
+                const rect = timelineContainer.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const progressWidth = rect.width;
+                const posisiWaktu = (clickX / progressWidth) * videoPlayer.duration;
+                videoPlayer.currentTime = posisiWaktu;
+            });
+        }
+
+        // Helper untuk render list rekomendasi di bawah
+        const relatedContainer = document.getElementById('relatedVideosContainer');
+        function renderVideos(videosList) {
+            relatedContainer.innerHTML = ''; // Bersihkan container
+            videosList.forEach(video => {
+                const card = document.createElement('div');
+                card.className = 'related-card';
+                card.innerHTML = `
+                    <div class="related-thumb-container">
+                        <img src="${video.thumbnail}" alt="Thumbnail ${video.title}" class="related-thumb">
+                        <div class="related-duration">${video.duration}</div>
+                    </div>
+                    <div class="related-info">
+                        <h4 class="related-video-title" title="${video.title}">${video.title}</h4>
+                        <div class="related-meta">
+                            <span>🎥 ${video.category || 'Sinematik'}</span>
+                            <span>•</span>
+                            <span>${video.time}</span>
+                        </div>
+                    </div>
+                `;
+                // Klik pada video rekomendasi akan memuat ulang halaman dengan ID baru
+                card.addEventListener('click', () => {
+                    window.location.href = `playground.html?id=${video.id}`;
+                });
+                relatedContainer.appendChild(card);
+            });
+        }
+
+        // Panggil fungsi utama saat halaman dibuka
+        muatHalamanVideo();
+
+        // LOGIKA SEARCH EXPANDABLE (Tetap Pertahankan)
         const searchToggleBtn = document.getElementById('searchToggleBtn');
         const expandableSearch = document.getElementById('expandableSearch');
         const expandingInput = document.getElementById('searchInput');
@@ -641,7 +767,7 @@
             }
         });
 
-        // NAVIGATION DRAWER LOGIC
+        // LOGIKA MENU TOGGLE DRAWER
         const menuToggleBtn = document.getElementById('menuToggleBtn');
         const navDrawer = document.getElementById('navDrawer');
         const drawerOverlay = document.getElementById('drawerOverlay');
@@ -649,307 +775,9 @@
         function toggleDrawer() {
             navDrawer.classList.toggle('active');
             drawerOverlay.classList.toggle('active');
-            if(navDrawer.classList.contains('active')) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = '';
-            }
         }
-
         menuToggleBtn.addEventListener('click', toggleDrawer);
         drawerOverlay.addEventListener('click', toggleDrawer);
-
-        // FOLLOW BUTTON LOGIC
-        const followBtn = document.getElementById('followBtn');
-        let isFollowing = false;
-        followBtn.addEventListener('click', () => {
-            isFollowing = !isFollowing;
-            if(isFollowing) {
-                followBtn.textContent = 'Mengikuti';
-                followBtn.style.backgroundColor = 'var(--accent)';
-                followBtn.style.color = '#0a0712';
-            } else {
-                followBtn.textContent = 'Ikuti Studio';
-                followBtn.style.backgroundColor = 'rgba(180, 147, 255, 0.1)';
-                followBtn.style.color = 'var(--accent)';
-            }
-        });
-
-        // COMMENTS INTERACTIVE LOGIC
-        const commentInput = document.getElementById('commentInput');
-        const commentForm = document.getElementById('commentForm');
-        const commentCancelBtn = document.getElementById('commentCancelBtn');
-        const commentSubmitBtn = document.getElementById('commentSubmitBtn');
-        const commentsList = document.getElementById('commentsList');
-        const commentCountBadge = document.getElementById('commentCount');
-        
-        let commentCountValue = 3;
-
-        commentInput.addEventListener('focus', () => {
-            commentForm.classList.add('active');
-        });
-
-        commentCancelBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            commentInput.value = '';
-            commentForm.classList.remove('active');
-            commentInput.style.height = 'auto';
-        });
-
-        // Auto-growing Textarea
-        commentInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
-
-        commentSubmitBtn.addEventListener('click', () => {
-            const commentText = commentInput.value.trim();
-            if (commentText !== '') {
-                // Tambah jumlah komentar
-                commentCountValue++;
-                commentCountBadge.textContent = commentCountValue;
-
-                // Elemen Komentar Baru
-                const newComment = document.createElement('div');
-                newComment.className = 'comment-item';
-                newComment.innerHTML = `
-                    <img class="comment-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80" alt="Avatar Pengguna Saat Ini">
-                    <div class="comment-content">
-                        <div class="comment-user-meta">
-                            <span class="comment-username">Kamu (Kolektor)</span>
-                            <span class="comment-badge">Baru</span>
-                            <span class="comment-time">Baru saja</span>
-                        </div>
-                        <p class="comment-text">${escapeHTML(commentText)}</p>
-                        <div class="comment-item-actions">
-                            <button class="comment-action-btn">
-                                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"></path></svg>
-                                <span>0</span>
-                            </button>
-                            <button class="comment-action-btn">Balas</button>
-                        </div>
-                    </div>
-                `;
-
-                // Letakkan di bagian atas list
-                commentsList.insertBefore(newComment, commentsList.firstChild);
-                
-                // Reset Input
-                commentInput.value = '';
-                commentForm.classList.remove('active');
-                commentInput.style.height = 'auto';
-                
-                // Scroll halus ke komentar baru
-                newComment.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        });
-
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
-        }
-
-        // PLAYER SIMULATION LOGIC
-        const videoPlayerWrapper = document.getElementById('videoPlayerWrapper');
-        const playerVisuals = document.getElementById('playerVisuals');
-        const playerOverlay = document.getElementById('playerOverlay');
-        const mainPlayBtn = document.getElementById('mainPlayBtn');
-        const centerPlayBtnContainer = document.getElementById('centerPlayBtnContainer');
-        const bottomPlayBtn = document.getElementById('bottomPlayBtn');
-        const playIconSVG = document.getElementById('playIconSVG');
-        const bottomPlayIcon = document.getElementById('bottomPlayIcon');
-        const timelineProgress = document.getElementById('timelineProgress');
-        const timeDisplay = document.getElementById('timeDisplay');
-        const timelineContainer = document.getElementById('timelineContainer');
-
-        let isPlaying = false;
-        let playInterval;
-        let currentTime = 0; // dalam detik
-        const totalDuration = 754; // 12:34 dalam detik
-
-        const playSVG = `<path d="M8 5v14l11-7z"></path>`;
-        const pauseSVG = `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>`;
-
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60);
-            const s = Math.floor(seconds % 60);
-            return `${m}:${s < 10 ? '0' : ''}${s}`;
-        }
-
-        function togglePlay() {
-            isPlaying = !isPlaying;
-            if (isPlaying) {
-                // Play
-                playIconSVG.innerHTML = pauseSVG;
-                bottomPlayIcon.innerHTML = pauseSVG;
-                centerPlayBtnContainer.style.opacity = '0';
-                setTimeout(() => centerPlayBtnContainer.style.display = 'none', 300);
-                playerOverlay.style.background = 'transparent';
-                videoPlayerWrapper.classList.add('playing');
-                
-                playInterval = setInterval(() => {
-                    currentTime += 1;
-                    if(currentTime > totalDuration) currentTime = 0;
-                    
-                    const progressPercent = (currentTime / totalDuration) * 100;
-                    timelineProgress.style.width = `${progressPercent}%`;
-                    timeDisplay.textContent = `${formatTime(currentTime)} / 12:34`;
-                }, 1000);
-            } else {
-                // Pause
-                playIconSVG.innerHTML = playSVG;
-                bottomPlayIcon.innerHTML = playSVG;
-                centerPlayBtnContainer.style.display = 'block';
-                setTimeout(() => centerPlayBtnContainer.style.opacity = '1', 10);
-                playerOverlay.style.background = 'rgba(10, 7, 18, 0.4)';
-                videoPlayerWrapper.classList.remove('playing');
-                clearInterval(playInterval);
-            }
-        }
-
-        mainPlayBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
-        bottomPlayBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
-        playerVisuals.addEventListener('click', togglePlay);
-        playerOverlay.addEventListener('click', togglePlay);
-
-        // Klik di timeline untuk melompat (seek)
-        timelineContainer.addEventListener('click', (e) => {
-            const rect = timelineContainer.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const width = rect.width;
-            const percentage = clickX / width;
-            
-            currentTime = percentage * totalDuration;
-            timelineProgress.style.width = `${percentage * 100}%`;
-            timeDisplay.textContent = `${formatTime(currentTime)} / 12:34`;
-        });
-
-        // CURATED MOCK DATA (First 8 items)
-        const initialVideos = [
-            { id: 2, title: "Lanskap Kota Tokyo Malam Hari Sinematik 8K", format: "MP4 • 4K", thumbnail: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80", duration: "18:15", size: "1.2 GB" },
-            { id: 3, title: "Desain UI/UX Minimalis Workspace Background", format: "MOV • 1080p", thumbnail: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&w=600&q=80", duration: "05:02", size: "340 MB" },
-            { id: 7, title: "Setup PC Gaming Abstrak dengan Lampu RGB", format: "MP4 • 1080p", thumbnail: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80", duration: "02:20", size: "125 MB" },
-            { id: 5, title: "Ruang Koding Estetik Tema Malam Hari", format: "MP4 • 4K", thumbnail: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=600&q=80", duration: "10:45", size: "890 MB" },
-            { id: 11, title: "Lorong Jalanan Kota Cyberpunk dengan Lampu Neon", format: "MP4 • 4K", thumbnail: "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?auto=format&fit=crop&w=600&q=80", duration: "04:15", size: "410 MB" },
-            { id: 12, title: "Suasana Hujan Cozy Lofi Study Room Loop", format: "MP4 • 1080p", thumbnail: "https://images.unsplash.com/photo-1516981879613-9f5da904015f?auto=format&fit=crop&w=600&q=80", duration: "25:00", size: "1.5 GB" },
-            { id: 10, title: "Latte Art Kopi dengan Background Bunga Lavender", format: "MP4 • 720p", thumbnail: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80", duration: "01:12", size: "45 MB" },
-            { id: 6, title: "Layar Kode Pemrograman B-Roll Footage", format: "MP4 • 1080p", thumbnail: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80", duration: "03:00", size: "210 MB" }
-        ];
-
-        const relatedContainer = document.getElementById('relatedVideosContainer');
-        
-        // Render helper function with subtle fade-in transition
-        function renderVideos(videosList) {
-            videosList.forEach(video => {
-                const card = document.createElement('div');
-                card.className = 'related-card';
-                card.innerHTML = `
-                    <div class="related-thumb-container">
-                        <img src="${video.thumbnail}" alt="Thumbnail ${video.title}" class="related-thumb">
-                        <div class="related-duration">${video.duration}</div>
-                    </div>
-                    <div class="related-info">
-                        <h4 class="related-video-title" title="${video.title}">${video.title}</h4>
-                        <div class="related-meta">
-                            <span><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg> ${video.format}</span>
-                            <span>•</span>
-                            <span>${video.size}</span>
-                        </div>
-                    </div>
-                `;
-                relatedContainer.appendChild(card);
-            });
-        }
-
-        // Initial Render
-        renderVideos(initialVideos);
-
-        // LIHAT LEBIH BANYAK (LOAD MORE) LOGIC
-        const loadMoreBtn = document.getElementById('loadMoreBtn');
-        let loadMoreClickCount = 0;
-
-        // Custom list for the first expanded click (Click #1)
-        const secondaryBatch = [
-            { id: 101, title: "Setup Desk Aesthetic Minimalis Kayu Oak", format: "MP4 • 1080p", thumbnail: "https://images.unsplash.com/photo-1547082299-de196ea013d6?auto=format&fit=crop&w=600&q=80", duration: "08:34", size: "195 MB" },
-            { id: 102, title: "Cinematic Coffee Shop B-Roll Cozy Ambient", format: "MP4 • 4K", thumbnail: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=600&q=80", duration: "04:15", size: "560 MB" },
-            { id: 103, title: "Review Lampu Neon Hexagonal RGB Pintar", format: "MP4 • 1080p", thumbnail: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80", duration: "11:20", size: "280 MB" },
-            { id: 104, title: "Desain Workspace Developer Tema Monokrom", format: "MOV • 1080p", thumbnail: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80", duration: "06:10", size: "420 MB" },
-            { id: 105, title: "Visualizer Audio Gelombang Musik Neon Violet", format: "MP4 • 4K", thumbnail: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80", duration: "03:30", size: "290 MB" },
-            { id: 106, title: "Lofi Hip Hop Live Stream Background Loop", format: "MP4 • 1080p", thumbnail: "https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?auto=format&fit=crop&w=600&q=80", duration: "59:59", size: "1.8 GB" },
-            { id: 107, title: "Kompilasi Animasi UI/UX Modern Micro-interactions", format: "MP4 • 1080p", thumbnail: "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?auto=format&fit=crop&w=600&q=80", duration: "05:45", size: "150 MB" },
-            { id: 108, title: "Lanskap Alam Pegunungan Kabut Sinematik 4K", format: "MP4 • 4K", thumbnail: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80", duration: "02:15", size: "380 MB" }
-        ];
-
-        // Template logic for infinite loads (Click #2 and onwards)
-        function getInfiniteBatch(batchIndex) {
-            const templates = [
-                { title: "Review Monitor Curved Ultrawide Productivity", keyword: "monitor" },
-                { title: "Setup Lampu Meja RGB Bar Neon Fleksibel", keyword: "neon" },
-                { title: "Keyboard Mekanik Kustom Suara Creamy ASMR", keyword: "keyboard" },
-                { title: "Review Kursi Ergonomis Premium Minimalis", keyword: "chair" },
-                { title: "Eksplorasi Efek Neon Lightroom Preset Pack", keyword: "abstract" },
-                { title: "Ruang Kreatif Seni Lukis Digital Pro", keyword: "art" },
-                { title: "Timelapse Pembuatan Game RPG Unik Unity", keyword: "code" },
-                { title: "Review Headphone Studio Audio Frekuensi Tinggi", keyword: "audio" }
-            ];
-            
-            const fallbackImages = [
-                "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=600&q=80", // monitor
-                "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80", // neon
-                "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?auto=format&fit=crop&w=600&q=80", // keyboard
-                "https://images.unsplash.com/photo-1505797149-43b0069ec26b?auto=format&fit=crop&w=600&q=80", // desk setup
-                "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80", // abstract
-                "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80", // anime screen
-                "https://images.unsplash.com/photo-1607799279861-4dd421887fb3?auto=format&fit=crop&w=600&q=80", // coding
-                "https://images.unsplash.com/photo-1484704849700-f032a568e944?auto=format&fit=crop&w=600&q=80"  // audio
-            ];
-
-            return templates.map((t, idx) => ({
-                id: 200 + batchIndex * 10 + idx,
-                title: `${t.title} (Edisi #${batchIndex + 1})`,
-                format: idx % 2 === 0 ? "MP4 • 4K" : "MP4 • 1080p",
-                thumbnail: fallbackImages[idx],
-                duration: `0${Math.floor(Math.random() * 8) + 2}:${Math.floor(Math.random() * 50) + 10}`,
-                size: `${Math.floor(Math.random() * 600) + 80} MB`
-            }));
-        }
-
-        loadMoreBtn.addEventListener('click', () => {
-            // Disable button and show custom glowing spinner
-            loadMoreBtn.disabled = true;
-            loadMoreBtn.innerHTML = `
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="animation: spin 0.8s linear infinite;">
-                    <circle cx="12" cy="12" r="10" stroke="rgba(180, 147, 255, 0.2)"></circle>
-                    <path d="M4 12a8 8 0 018-8" stroke="var(--accent)"></path>
-                </svg>
-                Menghubungkan Server...
-            `;
-
-            // Simulating network delay for ultra-premium look
-            setTimeout(() => {
-                let nextBatch = [];
-                
-                if (loadMoreClickCount === 0) {
-                    nextBatch = secondaryBatch;
-                } else {
-                    nextBatch = getInfiniteBatch(loadMoreClickCount);
-                }
-
-                renderVideos(nextBatch);
-                loadMoreClickCount++;
-
-                // Reset button text & state
-                loadMoreBtn.innerHTML = `Lihat Lebih Banyak`;
-                loadMoreBtn.disabled = false;
-                
-                // Smooth scroll into newly loaded videos
-                const addedFirstItem = relatedContainer.children[relatedContainer.children.length - 8];
-                if(addedFirstItem) {
-                    addedFirstItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-            }, 800);
-        });
     </script>
 </body>
 </html>
