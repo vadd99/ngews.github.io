@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "title": "Membangun Studio Impian Bertema Neon Violet Masa Kini",
+    "channel": "TechEstetika",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+    "thumbnail": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
+    "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+    "duration": "12:34",
+    "views": "45RB x",
+    "time": "2 hari yang lalu",
+    "category": "Ulasan Tech",
+    "country": "Indonesia"
+  },
+  {
+    "id": 2,
+    "title": "Eksplorasi Sudut Kota Tokyo di Malam Hari dengan Kamera 8K",
+    "channel": "TokyoNocturnal",
+    "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+    "thumbnail": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80",
+    "videoUrl": "https://www.w3schools.com/html/movie.mp4",
+    "duration": "18:15",
+    "views": "120RB x",
+    "time": "1 minggu yang lalu",
+    "category": "Vlog Perjalanan",
+    "country": "Jepang"
+  },
+  {
+    "id": 3,
+    "title": "Tutorial Membuat UI/UX Minimalis dengan Sentuhan Warna Lavender",
+    "channel": "PixelDesign",
+    "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
+    "thumbnail": "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&w=600&q=80",
+    "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+    "duration": "24:02",
+    "views": "12RB x",
+    "time": "3 hari yang lalu",
+    "category": "Tutorial",
+    "country": "Global"
+  }
+]
+
