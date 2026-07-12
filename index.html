@@ -1199,28 +1199,22 @@
         const expandableSearch = document.getElementById('expandableSearch');
         const expandingInput = document.getElementById('searchInput');
 
-        // Toggle saat icon diklik
         searchToggleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            // Jika belum terbuka, buka lalu fokus ke input
             if (!expandableSearch.classList.contains('active')) {
                 expandableSearch.classList.add('active');
                 expandingInput.focus();
             } else {
-                // Jika sudah terbuka dan tombol diklik lagi, bisa dianggap submit atau tutup
-                // Untuk demo ini, biarkan terbuka atau tutup jika input kosong
                 if (expandingInput.value === '') {
                     expandableSearch.classList.remove('active');
                 }
             }
         });
 
-        // Mencegah klik di dalam area input menutup pencarian
         expandingInput.addEventListener('click', (e) => {
             e.stopPropagation();
         });
 
-        // Tutup kotak pencarian jika klik di luar area pencarian (dan input kosong)
         document.addEventListener('click', (e) => {
             if (expandableSearch.classList.contains('active') && expandingInput.value === '') {
                 expandableSearch.classList.remove('active');
@@ -1228,57 +1222,86 @@
         });
 
 
-        // DATA VIDEO MOCKUP
-        const mockVideos = [
-            { id: 1, title: "Membangun Studio Impian Bertema Neon Violet Masa Kini", channel: "TechEstetika", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80", thumbnail: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80", duration: "12:34", views: "45RB x", time: "2 hari yang lalu" },
-            { id: 2, title: "Eksplorasi Sudut Kota Tokyo di Malam Hari dengan Kamera 8K", channel: "TokyoNocturnal", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80", thumbnail: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80", duration: "18:15", views: "120RB x", time: "1 minggu yang lalu" },
-            { id: 3, title: "Tutorial Membuat UI/UX Minimalis dengan Sentuhan Warna Lavender", channel: "PixelDesign", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80", thumbnail: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&w=600&q=80", duration: "24:02", views: "12RB x", time: "3 hari yang lalu" },
-            { id: 4, title: "Misteri Planet Ke-9: Perjalanan ke Batas Tata Surya Kita", channel: "CosmoSains", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80", thumbnail: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80", duration: "15:40", views: "340RB x", time: "5 hari yang lalu" },
-            { id: 5, title: "Vlog Musik Lo-Fi Santai untuk Menemani Belajar & Coding Semalaman", channel: "ChillWaves", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80", thumbnail: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=600&q=80", duration: "03:12:45", views: "1.2JT x", time: "1 bulan yang lalu" },
-            { id: 6, title: "Belajar Bahasa Pemrograman Rust dalam 10 Menit untuk Pemula", channel: "KodingKreatif", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80", thumbnail: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80", duration: "10:00", views: "89RB x", time: "6 hari yang lalu" },
-            { id: 7, title: "Mencoba Setup Setup PC Gaming Seharga 100 Juta Rupiah!", channel: "GamerBatam", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=150&q=80", thumbnail: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80", duration: "14:20", views: "210RB x", time: "12 jam yang lalu" },
-            { id: 8, title: "Petualangan Mendaki Gunung Bromo di Bawah Hamparan Galaksi Bima Sakti", channel: "LangkahBumi", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80", thumbnail: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80", duration: "21:50", views: "67RB x", time: "4 hari yang lalu" },
-            { id: 9, title: "Review Jujur Smartphone Layar Lipat Generasi Terbaru - Layakkah Dibeli?", channel: "GadgetVibe", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80", thumbnail: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80", duration: "11:05", views: "154RB x", time: "3 hari yang lalu" },
-            { id: 10, title: "Seni Membuat Kopi Latte Art Berbentuk Bunga Lavender yang Estetik", channel: "BrewMaster", avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=150&q=80", thumbnail: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80", duration: "08:12", views: "34RB x", time: "1 minggu yang lalu" }
-        ];
+        // STATE DATA UTAMA
+        let mockVideos = []; // Akan diisi data asli dari postingan.json
+        let kategoriAktif = 'Semua';
+        let negaraAktif = 'Global';
 
-        // HERO SLIDER LOGIC (10 Dummy Slider)
+        // FUNGSI UNTUK MENGAMBIL DATA DARI POSTINGAN.JSON
+        async function ambilDataPostingan() {
+            try {
+                const response = await fetch('./postingan.json');
+                mockVideos = await response.json();
+                
+                // Render pertama kali saat halaman dibuka
+                renderVideos(mockVideos);
+                inisialisasiSlider(); 
+            } catch (error) {
+                console.error("Gagal memuat data postingan:", error);
+                videoGrid.innerHTML = `
+                    <div style="grid-column: span 2; text-align: center; padding: 40px; color: #ff6b6b">
+                        <p style="font-size: 1.2rem; margin-bottom: 8px;">Gagal memuat postingan</p>
+                        <p style="font-size: 0.9rem;">Pastikan file postingan.json sudah di-upload ke repo.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // AMBIL DATA KETIKA HALAMAN SIAP
+        ambilDataPostingan();
+
+
+        // HERO SLIDER LOGIC (Dinamis Berdasarkan Data JSON)
         const sliderTrack = document.getElementById('heroSliderTrack');
         const sliderDots = document.getElementById('sliderDots');
         const sliderPrev = document.getElementById('sliderPrev');
         const sliderNext = document.getElementById('sliderNext');
         const heroSliderContainer = document.getElementById('heroSliderContainer');
         
-        // Mengambil 10 video pertama sebagai dummy untuk slider
-        const sliderVideos = mockVideos.slice(0, 10);
         let currentSlide = 0;
+        let sliderVideos = [];
+        let autoPlaySlider;
         
-        // Render Slides
-        sliderVideos.forEach((video, index) => {
-            const slide = document.createElement('div');
-            slide.className = 'slide-item';
-            slide.style.backgroundImage = `url('${video.thumbnail}')`;
+        function inisialisasiSlider() {
+            sliderVideos = mockVideos.slice(0, 10); // Ambil maks 10 video terbaru
+            if (sliderVideos.length === 0) return;
+
+            sliderTrack.innerHTML = '';
+            sliderDots.innerHTML = '';
+            currentSlide = 0;
             
-            const playBtn = document.createElement('button');
-            playBtn.className = 'hero-play-btn';
-            playBtn.innerHTML = `<svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>`;
-            // Buka Modal Video ketika tombol play diklik
-            playBtn.addEventListener('click', () => openVideoModal(video));
-            
-            slide.appendChild(playBtn);
-            sliderTrack.appendChild(slide);
-            
-            // Render Dots navigasi
-            const dot = document.createElement('div');
-            dot.className = `dot ${index === 0 ? 'active' : ''}`;
-            dot.addEventListener('click', () => {
-                currentSlide = index;
-                updateSlider();
+            sliderVideos.forEach((video, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'slide-item';
+                slide.style.backgroundImage = `url('${video.thumbnail}')`;
+                
+                const playBtn = document.createElement('button');
+                playBtn.className = 'hero-play-btn';
+                playBtn.innerHTML = `<svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>`;
+                playBtn.addEventListener('click', () => {
+    window.location.href = `playground.html?id=${video.id}`;
+});
+
+                
+                slide.appendChild(playBtn);
+                sliderTrack.appendChild(slide);
+                
+                const dot = document.createElement('div');
+                dot.className = `dot ${index === 0 ? 'active' : ''}`;
+                dot.addEventListener('click', () => {
+                    currentSlide = index;
+                    updateSlider();
+                });
+                sliderDots.appendChild(dot);
             });
-            sliderDots.appendChild(dot);
-        });
+
+            // Set Ulang Autoplay
+            clearInterval(autoPlaySlider);
+            autoPlaySlider = setInterval(nextSlide, 5000);
+        }
         
         function updateSlider() {
+            if (sliderVideos.length === 0) return;
             sliderTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
             document.querySelectorAll('.slider-dots .dot').forEach((dot, index) => {
                 dot.classList.toggle('active', index === currentSlide);
@@ -1286,13 +1309,13 @@
         }
         
         function nextSlide() {
-            // Logika (currentSlide + 1) % 10 akan otomatis memutar balik ke 0 setelah mencapai akhir
+            if (sliderVideos.length === 0) return;
             currentSlide = (currentSlide + 1) % sliderVideos.length;
             updateSlider();
         }
         
         function prevSlide() {
-            // Memutar mundur ke belakang
+            if (sliderVideos.length === 0) return;
             currentSlide = (currentSlide - 1 + sliderVideos.length) % sliderVideos.length;
             updateSlider();
         }
@@ -1300,7 +1323,7 @@
         sliderNext.addEventListener('click', nextSlide);
         sliderPrev.addEventListener('click', prevSlide);
         
-        // Touch & Swipe Logic untuk Slider
+        // Touch & Swipe Logic
         let touchStartX = 0;
         let touchEndX = 0;
         
@@ -1314,17 +1337,17 @@
         }, {passive: true});
         
         function handleSwipe() {
-            const threshold = 50; // batas jarak geser dalam piksel
-            if (touchStartX - touchEndX > threshold) nextSlide(); // Geser ke Kiri (Next)
-            if (touchEndX - touchStartX > threshold) prevSlide(); // Geser ke Kanan (Prev)
+            const threshold = 50;
+            if (touchStartX - touchEndX > threshold) nextSlide();
+            if (touchEndX - touchStartX > threshold) prevSlide();
         }
 
-        // Opsional: Autoplay bergeser setiap 5 detik (bisa Anda hapus jika tidak ingin otomatis)
-        let autoPlaySlider = setInterval(nextSlide, 5000);
-        
-        // Hentikan putaran saat di hover agar nyaman diklik
         heroSliderContainer.addEventListener('mouseenter', () => clearInterval(autoPlaySlider));
-        heroSliderContainer.addEventListener('mouseleave', () => autoPlaySlider = setInterval(nextSlide, 5000));
+        heroSliderContainer.addEventListener('mouseleave', () => {
+            clearInterval(autoPlaySlider);
+            autoPlaySlider = setInterval(nextSlide, 5000);
+        });
+
 
         // RENDER VIDEO ITEMS TO GRID
         const videoGrid = document.getElementById('videoGrid');
@@ -1335,7 +1358,7 @@
                 videoGrid.innerHTML = `
                     <div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted)">
                         <p style="font-size: 1.2rem; margin-bottom: 8px;">Tidak ada hasil ditemukan</p>
-                        <p style="font-size: 0.9rem;">Cobalah cari dengan kata kunci lain.</p>
+                        <p style="font-size: 0.9rem;">Cobalah pilih kategori lain atau ubah pencarian.</p>
                     </div>
                 `;
                 return;
@@ -1376,14 +1399,13 @@
                 `;
                 
                 videoCard.addEventListener('click', () => {
-                    openVideoModal(video);
+                    window.location.href = `playground.html?id=${video.id}`;
                 });
                 
                 videoGrid.appendChild(videoCard);
             });
         }
 
-        renderVideos(mockVideos);
 
         // RESPONSIVE SIDEBAR TOGGLE
         const menuToggleBtn = document.getElementById('menuToggleBtn');
@@ -1399,15 +1421,11 @@
             }
         });
 
-        // Menutup sidebar jika mengklik area di luar sidebar
         document.addEventListener('click', (e) => {
-            // Memastikan klik tidak terjadi di dalam sidebar dan bukan pada tombol menu
             if (!sidebar.contains(e.target) && !menuToggleBtn.contains(e.target)) {
                 if (window.innerWidth <= 768) {
-                    // Sembunyikan untuk mode Mobile
                     sidebar.classList.remove('active');
                 } else {
-                    // Sembunyikan untuk mode Desktop
                     if (!sidebar.classList.contains('collapsed')) {
                         sidebar.classList.add('collapsed');
                         mainContent.classList.add('expanded');
@@ -1416,15 +1434,24 @@
             }
         });
 
-        // LIVE SEARCH FILTERING
-        expandingInput.addEventListener('input', (e) => {
-            const keyword = e.target.value.toLowerCase();
-            const filtered = mockVideos.filter(video => 
-                video.title.toLowerCase().includes(keyword) || 
-                video.channel.toLowerCase().includes(keyword)
-            );
-            renderVideos(filtered);
-        });
+
+        // LIVE SEARCH & FILTER COMBINATION LOGIC
+        function jalankanFilterSistem() {
+            const keyword = expandingInput.value.toLowerCase();
+            
+            const hasilFilter = mockVideos.filter(video => {
+                const cocokKeyword = video.title.toLowerCase().includes(keyword) || video.channel.toLowerCase().includes(keyword);
+                const cocokKategori = (kategoriAktif === 'Semua' || video.category === kategoriAktif);
+                const cocokNegara = (negaraAktif === 'Global' || video.country === negaraAktif);
+                
+                return cocokKeyword && cocokKategori && cocokNegara;
+            });
+            
+            renderVideos(hasilFilter);
+        }
+
+        expandingInput.addEventListener('input', jalankanFilterSistem);
+
 
         // BOTTOM TAGS INTERACTIVE SELECTION
         const tagPills = document.querySelectorAll('.tag-pill');
@@ -1434,17 +1461,22 @@
                 group.querySelectorAll('.tag-pill').forEach(p => p.classList.remove('active'));
                 pill.classList.add('active');
 
-                const filterText = pill.textContent.toLowerCase();
-                if (filterText === 'semua' || filterText === 'global') {
-                    renderVideos(mockVideos);
-                } else {
-                    const filtered = mockVideos.filter(() => Math.random() > 0.4);
-                    renderVideos(filtered);
+                // Bersihkan emoji untuk pencocokan string data murni
+                const teksTag = pill.textContent.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD00-\uDFFF]/g, '').trim();
+                const judulGrup = group.previousElementSibling.textContent.toLowerCase();
+
+                if (judulGrup.includes('kategori')) {
+                    kategoriAktif = teksTag;
+                } else if (judulGrup.includes('negara')) {
+                    negaraAktif = teksTag;
                 }
+
+                jalankanFilterSistem();
             });
         });
 
-        // MODAL INTERACTIVE LOGIC
+
+        // MODAL INTERACTIVE & VIDEO PLAYER LOGIC
         const videoModal = document.getElementById('videoModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
         const modalVideoTitle = document.getElementById('modalVideoTitle');
@@ -1457,7 +1489,6 @@
         const subBtn = document.getElementById('subBtn');
         const likeBtn = document.getElementById('likeBtn');
         const likeCount = document.getElementById('likeCount');
-        const featuredPlayBtn = document.getElementById('featuredPlayBtn');
 
         let isPlaying = false;
         let playInterval;
@@ -1468,10 +1499,11 @@
             modalChannelAvatar.src = video.avatar;
             playerVisuals.style.backgroundImage = `url('${video.thumbnail}')`;
             
+            // Mengatur Ulang State Player Simulasi bawaan agar segar saat dibuka
             isPlaying = false;
             playingText.textContent = "KLIK UNTUK MEMUTAR VIDEO";
             playingText.style.color = "var(--accent)";
-            playerTimeline.style.width = "35%";
+            playerTimeline.style.width = "0%";
             modalPlayTrigger.style.display = 'flex';
             clearInterval(playInterval);
 
@@ -1480,6 +1512,8 @@
 
             subBtn.textContent = 'Subscribe';
             subBtn.classList.add('active');
+            subBtn.style.backgroundColor = '';
+            subBtn.style.color = '';
 
             videoModal.classList.add('active');
             document.body.style.overflow = 'hidden'; 
@@ -1510,12 +1544,12 @@
                 playingText.style.color = "#10b981"; 
                 modalPlayTrigger.style.display = 'none';
                 
-                let progress = 35;
+                let progress = 0;
                 playInterval = setInterval(() => {
                     progress += 0.5;
                     if(progress >= 100) progress = 0;
                     playerTimeline.style.width = progress + '%';
-                }, 300);
+                }, 100);
             } else {
                 isPlaying = false;
                 playingText.textContent = "PAUSED";
@@ -1542,6 +1576,7 @@
         likeBtn.addEventListener('click', () => {
             likeBtn.classList.toggle('active');
         });
+
 
     </script>
 </body>
