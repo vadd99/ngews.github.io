@@ -88,19 +88,29 @@
 
         /* TAMPILAN ICON STATE TENGAH PROFESIONAL */
         .center-state-icon {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
-            z-index: 9; color: #ffffff; background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 50%;
-            pointer-events: none; opacity: 0; pointer-events: none;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1);
+            z-index: 9; color: #ffffff; background: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 50%;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; align-items: center; justify-content: center;
         }
         
+        /* State awal ketika video terdeteksi tapi belum diputar */
+        .center-state-icon.visible {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto; /* Memungkinkan user klik ikonnya langsung untuk play */
+            cursor: pointer;
+        }
+        
+        /* Animasi kilat memudar ketika memicu play/pause di tengah */
         @keyframes iconFlicker {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
             30% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
             80% { opacity: 0.8; }
             100% { opacity: 0; transform: translate(-50%, -50%) scale(1.3); }
         }
         .center-state-icon.animate {
-            animation: iconFlicker 0.6s ease-out forwards;
+            animation: iconFlicker 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
         }
 
         /* KONTROL PLAYER BAWAH CUSTOM */
@@ -382,9 +392,9 @@
                 <svg viewBox="0 0 24 24"><path d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
             </div>
 
-            <!-- Icon State Pemutar Tengah Layar Sempurna -->
+            <!-- Icon State Pemutar Tengah Layar Sempurna (Awalnya menampilkan Play) -->
             <div class="center-state-icon" id="centerStateIcon">
-                <!-- Diisi Icon Dinamis via JS -->
+                <!-- Diisi Icon Play Dinamis di Awal via JS -->
             </div>
 
             <!-- Kontrol Player Bawah Custom -->
@@ -522,6 +532,7 @@
                         
                         const customControls = document.querySelector('.player-controls');
                         if (customControls) customControls.style.display = 'none';
+                        if (centerStateIcon) centerStateIcon.style.display = 'none';
                     } else {
                         const video = document.createElement('video');
                         video.id = 'mainVideoPlayer';
@@ -549,17 +560,21 @@
             const activePlayer = window.globalVideoPlayer;
             if (!activePlayer) return;
 
+            // KONDISI AWAL: Tampilkan ikon Play putih statis di tengah saat video baru termuat
+            centerStateIcon.innerHTML = `<svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">${playSVG}</svg>`;
+            centerStateIcon.className = 'center-state-icon visible';
+
             function formatTime(seconds) {
                 const m = Math.floor(seconds / 60);
                 const s = Math.floor(seconds % 60);
                 return `${m}:${s < 10 ? '0' : ''}${s}`;
             }
 
-            // Fungsi memicu animasi icon tengah secara profesional
-            function triggerCenterIcon(svgMarkup) {
+            // Fungsi memicu animasi flicker memudar cepat ketika video di-play/pause
+            function triggerCenterAnimation(svgMarkup) {
+                centerStateIcon.className = 'center-state-icon'; // Hapus kelas visible statis
                 centerStateIcon.innerHTML = `<svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">${svgMarkup}</svg>`;
-                centerStateIcon.classList.remove('animate');
-                void centerStateIcon.offsetWidth; // Reset struktur DOM animasi
+                void centerStateIcon.offsetWidth; // Force reflow
                 centerStateIcon.classList.add('animate');
             }
 
@@ -568,15 +583,21 @@
                     activePlayer.play().then(() => {
                         bottomPlayIcon.innerHTML = pauseSVG;
                         videoPlayerWrapper.classList.add('playing');
-                        triggerCenterIcon(pauseSVG);
+                        triggerCenterAnimation(pauseSVG);
                     }).catch(err => console.log("Playback dicegah browser."));
                 } else {
                     activePlayer.pause();
                     bottomPlayIcon.innerHTML = playSVG;
                     videoPlayerWrapper.classList.remove('playing');
-                    triggerCenterIcon(playSVG);
+                    triggerCenterAnimation(playSVG);
                 }
             }
+
+            // Klik pada ikon tengah statis awal juga akan memicu video terputar
+            centerStateIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                eksekusiTogglePlay();
+            });
 
             // Aksi tombol volume / mute
             volumeBtn.addEventListener('click', (e) => {
@@ -604,7 +625,7 @@
                 }
             });
 
-            // LOGIKA DOUBLE CLICK JARI KANAN KIRI DENGAN RIPPLE PROFESSIONAL ICON
+            // LOGIKA DOUBLE CLICK JARI KANAN KIRI DENGAN RIPPLE
             playerContainer.addEventListener('dblclick', (e) => {
                 clearTimeout(clickTimeout);
                 clickTimeout = null;
