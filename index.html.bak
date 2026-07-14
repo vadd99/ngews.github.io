@@ -1431,23 +1431,20 @@
             }
         });
 
-// LIVE SEARCH & FILTER COMBINATION LOGIC (FIXED COUNTRY BUG)
-function jalankanFilterSistem() {
-    const keyword = expandingInput.value.toLowerCase();
-    
-    const hasilFilter = mockVideos.filter(video => {
-        const cocokKeyword = video.title.toLowerCase().includes(keyword) || video.channel.toLowerCase().includes(keyword);
-        const cocokKategori = (kategoriAktif === 'Semua' || (video.category && video.category.trim() === kategoriAktif));
-        
-        // Bersihkan emoji bendera dari variabel negaraAktif agar menjadi teks murni (cth: "🇮🇩 Indonesia" -> "Indonesia")
-        const negaraMurni = negaraAktif.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD00-\uDFFF]/g, '').trim();
-        const cocokNegara = (negaraAktif === 'Global' || (video.country && video.country.trim() === negaraMurni));
-        
-        return cocokKeyword && cocokKategori && cocokNegara;
-    });
-    
-    renderVideos(hasilFilter);
-}
+        // LIVE SEARCH & FILTER COMBINATION LOGIC
+        function jalankanFilterSistem() {
+            const keyword = expandingInput.value.toLowerCase();
+            
+            const hasilFilter = mockVideos.filter(video => {
+                const cocokKeyword = video.title.toLowerCase().includes(keyword) || video.channel.toLowerCase().includes(keyword);
+                const cocokKategori = (kategoriAktif === 'Semua' || (video.category && video.category.trim() === kategoriAktif));
+                const cocokNegara = (negaraAktif === 'Global' || (video.country && video.country.trim() === negaraAktif));
+                
+                return cocokKeyword && cocokKategori && cocokNegara;
+            });
+            
+            renderVideos(hasilFilter);
+        }
 
         expandingInput.addEventListener('input', jalankanFilterSistem);
     </script>
