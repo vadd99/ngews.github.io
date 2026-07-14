@@ -81,15 +81,6 @@
             width: 100%; background-color: #000; border-radius: 16px; overflow: hidden; position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); aspect-ratio: 16 / 9; border: 1px solid var(--border-color);
         }
-        
-        /* Dukungan khusus Fullscreen API */
-        .player-wrapper:fullscreen {
-            border-radius: 0;
-            border: none;
-            aspect-ratio: auto;
-            width: 100vw;
-            height: 100vh;
-        }
 
         .big-play-btn {
             position: relative; z-index: 2; width: 80px; height: 80px; border-radius: 50%;
@@ -105,9 +96,6 @@
         }
         .player-wrapper:hover .player-controls, .player-wrapper.playing .player-controls { opacity: 1; transform: translateY(0); }
 
-        /* Tampilkan kontrol selalu di perangkat mobile saat disentuh */
-        .player-wrapper:active .player-controls { opacity: 1; transform: translateY(0); }
-
         .timeline-container { width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; cursor: pointer; position: relative; }
         .timeline-progress { position: absolute; top: 0; left: 0; height: 100%; background-color: var(--accent); border-radius: 2px; width: 0%; box-shadow: 0 0 10px var(--accent-glow); }
         .controls-row { display: flex; justify-content: space-between; align-items: center; }
@@ -115,16 +103,6 @@
         .control-btn { background: none; border: none; color: var(--text-main); cursor: pointer; display: flex; align-items: center; transition: var(--transition); }
         .control-btn:hover { color: var(--accent); }
         .time-display { font-size: 0.85rem; font-weight: 500; }
-
-        /* Elemen Umpan Balik Ketuk Dua Kali */
-        .seek-feedback-overlay {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(10, 7, 18, 0.75); border: 1px solid var(--border-color); color: var(--accent);
-            padding: 12px 24px; border-radius: 30px; font-weight: 700; font-size: 1.1rem;
-            letter-spacing: 0.5px; z-index: 8; pointer-events: none; opacity: 0;
-            transition: opacity 0.2s ease; box-shadow: 0 0 20px rgba(180, 147, 255, 0.2);
-        }
-        .seek-feedback-overlay.active { opacity: 1; }
 
         /* CREATOR PROFILE SECTION */
         .creator-section {
@@ -432,9 +410,6 @@
             <!-- Wadah dinamis untuk video asli (.mp4) atau embed (iframe GDrive) -->
             <div id="playerContainer" style="width: 100%; height: 100%;"></div>
             
-            <!-- Elemen Teks Umpan Balik Kustom Detik (Double Tap Feedback) -->
-            <div class="seek-feedback-overlay" id="seekFeedback">5s ⏩</div>
-
             <!-- Tombol Play Tengah Besar -->
             <div style="position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9; transition: var(--transition);" id="centerPlayBtnContainer">
                 <button class="big-play-btn" id="mainPlayBtn">
@@ -442,7 +417,7 @@
                 </button>
             </div>
 
-            <!-- Kontrol Player Bawah Custom -->
+            <!-- Kontrol Player Bawah Custom (Otomatis disembunyikan untuk Google Drive) -->
             <div class="player-controls">
                 <div class="timeline-container" id="timelineContainer">
                     <div class="timeline-progress" id="timelineProgress"></div>
@@ -459,9 +434,6 @@
                     </div>
                     <div class="controls-right">
                         <span style="font-size: 0.8rem; font-weight: 600; margin-right: 8px;">1080p</span>
-                        <button class="control-btn" aria-label="Fullscreen" id="customFullscreenBtn">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -606,8 +578,6 @@
         const timelineProgress = document.getElementById('timelineProgress');
         const timeDisplay = document.getElementById('timeDisplay');
         const timelineContainer = document.getElementById('timelineContainer');
-        const customFullscreenBtn = document.getElementById('customFullscreenBtn');
-        const seekFeedback = document.getElementById('seekFeedback');
 
         let mockVideos = [];
         const playSVG = `<path d="M8 5v14l11-7z"></path>`;
@@ -638,8 +608,8 @@
                     playerContainer.innerHTML = '';
 
                     // PERIKSA JENIS MEDIA (GOOGLE DRIVE EMBED ATAU MEDIA MENTAH MP4)
-                    if (videoData.videoUrl.includes('drive.google.com') || videoData.videoUrl.includes('dood')) {
-                        // Membuat elemen iframe untuk Google Drive atau Doodstream
+                    if (videoData.videoUrl.includes('drive.google.com')) {
+                        // Membuat elemen iframe untuk Google Drive
                         const iframe = document.createElement('iframe');
                         iframe.src = videoData.videoUrl;
                         iframe.style.width = '100%';
@@ -650,7 +620,7 @@
                         
                         playerContainer.appendChild(iframe);
                         
-                        // Sembunyikan semua kontrol & tombol kustom
+                        // Sembunyikan semua kontrol & tombol custom karena Google Drive punya UI-nya sendiri
                         if (centerPlayBtnContainer) centerPlayBtnContainer.style.display = 'none';
                         const customControls = document.querySelector('.player-controls');
                         if (customControls) customControls.style.display = 'none';
@@ -662,13 +632,12 @@
                         video.poster = videoData.thumbnail;
                         video.style.width = '100%';
                         video.style.height = '100%';
-                        video.style.objectFit = 'contain'; /* Diubah ke contain agar video vertikal tidak crop dan kiri kanan gelap */
-                        video.style.backgroundColor = '#000000';
+                        video.style.objectFit = 'cover';
                         video.style.display = 'block';
                         
                         playerContainer.appendChild(video);
                         
-                        // Tampilkan kembali elemen UI kontrol kustom
+                        // Tampilkan kembali elemen UI kontrol custom lavendermu
                         if (centerPlayBtnContainer) {
                             centerPlayBtnContainer.style.display = 'block';
                             centerPlayBtnContainer.style.opacity = '1';
@@ -676,6 +645,7 @@
                         const customControls = document.querySelector('.player-controls');
                         if (customControls) customControls.style.display = 'flex';
                         
+                        // Daftarkan ke window objek global agar terbaca oleh fungsi pengendali
                         window.globalVideoPlayer = video;
                         inisialisasiKontrolVideo();
                     }
@@ -683,7 +653,7 @@
                     videoTitleEl.textContent = "Video Tidak Ditemukan";
                 }
 
-                // Tampilkan rekomendasi video serupa
+                // Tampilkan rekomendasi video serupa (kecuali video yang sedang aktif diputar)
                 const videoSerupa = mockVideos.filter(v => v.id !== videoId);
                 renderVideos(videoSerupa);
 
@@ -712,7 +682,7 @@
                         centerPlayBtnContainer.style.opacity = '0';
                         setTimeout(() => { if(!activePlayer.paused) centerPlayBtnContainer.style.display = 'none'; }, 300);
                         videoPlayerWrapper.classList.add('playing');
-                    }).catch(err => console.log("Playback diblokir otomatis oleh browser."));
+                    }).catch(err => console.log("Playback diblokir otomatis oleh kebijakan browser."));
                 } else {
                     activePlayer.pause();
                     bottomPlayIcon.innerHTML = playSVG;
@@ -726,60 +696,7 @@
             // Daftarkan event klik pada seluruh tombol pemicu utama
             bottomPlayBtn.addEventListener('click', (e) => { e.stopPropagation(); eksekusiTogglePlay(); });
             mainPlayBtn.addEventListener('click', (e) => { e.stopPropagation(); eksekusiTogglePlay(); });
-            
-            // Klik tunggal di area playerContainer untuk Play/Pause (Menghindari gangguan double-click)
-            let clickTimeout;
-            playerContainer.addEventListener('click', (e) => {
-                if (e.target.tagName === 'VIDEO') {
-                    if (!clickTimeout) {
-                        clickTimeout = setTimeout(() => {
-                            clickTimeout = null;
-                            eksekusiTogglePlay();
-                        }, 250); // Delay menunggu konfirmasi apakah user mau double click
-                    }
-                }
-            });
-
-            // LOGIKA FITUR BARU: KETUK DUA KALI (DOUBLE CLICK / TAP) UNTUK SEEEK 5 DETIK
-            playerContainer.addEventListener('dblclick', (e) => {
-                clearTimeout(clickTimeout); // Batalkan aksi single-click pause
-                clickTimeout = null;
-
-                const rect = playerContainer.getBoundingClientRect();
-                const clickX = e.clientX - rect.left; // Koordinat X posisi ketukan
-                const lebarPlayer = rect.width;
-
-                if (clickX < lebarPlayer / 2) {
-                    // Sisi Kiri: Mundur 5 detik
-                    activePlayer.currentTime = Math.max(activePlayer.currentTime - 5, 0);
-                    tampilkanTeksFeedback('⏪ 5s Mundur');
-                } else {
-                    // Sisi Kanan: Maju 5 detik
-                    activePlayer.currentTime = Math.min(activePlayer.currentTime + 5, activePlayer.duration);
-                    tampilkanTeksFeedback('Maju 5s ⏩');
-                }
-            });
-
-            function tampilkanTeksFeedback(teks) {
-                seekFeedback.textContent = teks;
-                seekFeedback.classList.add('active');
-                setTimeout(() => {
-                    seekFeedback.classList.remove('active');
-                }, 600);
-            }
-
-            // LOGIKA FITUR BARU: CUSTOM LAYAR PENUH (FULLSCREEN)
-            customFullscreenBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (!document.fullscreenElement) {
-                    // Memasukkan seluruh wrapper termasuk UI custom lavender ke dalam fullscreen
-                    videoPlayerWrapper.requestFullscreen().catch(err => {
-                        console.error(`Gagal masuk Fullscreen: ${err.message}`);
-                    });
-                } else {
-                    document.exitFullscreen();
-                }
-            });
+            activePlayer.addEventListener('click', eksekusiTogglePlay);
 
             // Perbarui timeline progress bar dan teks durasi secara berkala saat video berjalan
             activePlayer.addEventListener('timeupdate', () => {
@@ -819,6 +736,7 @@
                         </div>
                     </div>
                 `;
+                // Klik pada item video serupa akan memuat ulang halaman dengan ID baru
                 card.addEventListener('click', () => {
                     window.location.href = `playground.html?id=${video.id}`;
                 });
