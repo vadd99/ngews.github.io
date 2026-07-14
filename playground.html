@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Membangun Studio Impian Bertema Neon Violet - NGews</title>
+    <title>Platform Video - NGews</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -81,15 +81,6 @@
             width: 100%; background-color: #000; border-radius: 16px; overflow: hidden; position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); aspect-ratio: 16 / 9; border: 1px solid var(--border-color);
         }
-
-        .player-visuals {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80');
-            background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; transition: var(--transition);
-        }
-
-        .player-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 7, 18, 0.4); transition: var(--transition); }
-        .player-wrapper:hover .player-overlay { background: rgba(10, 7, 18, 0.2); }
 
         .big-play-btn {
             position: relative; z-index: 2; width: 80px; height: 80px; border-radius: 50%;
@@ -229,14 +220,8 @@
         
         /* Fade-in Animation for Loaded Cards */
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .related-card {
@@ -411,29 +396,28 @@
         <!-- HEADER INFO -->
         <div class="video-header-info">
             <div class="breadcrumb">
-                <a href="#">Beranda</a> 
+                <a href="index.html">Beranda</a> 
                 <span>/</span> 
-                <a href="#">Teknologi & Estetika</a> 
+                <a href="#" id="breadcrumbCategory">Kategori</a> 
                 <span>/</span> 
-                <span>Setup Ruangan</span>
+                <span>Memuat...</span>
             </div>
-            <h1 class="video-title">Membangun Studio Impian Bertema Neon Violet Masa Kini</h1>
+            <h1 class="video-title">Memuat Judul Video...</h1>
         </div>
 
         <!-- VIDEO PLAYER -->
         <div class="player-wrapper" id="videoPlayerWrapper">
-            <!-- Wadah dinamis yang akan diisi oleh JavaScript -->
+            <!-- Wadah dinamis untuk video asli (.mp4) atau embed (iframe GDrive) -->
             <div id="playerContainer" style="width: 100%; height: 100%;"></div>
             
-            <div class="player-visuals" id="playerVisuals"></div>
-            <div class="player-overlay" id="playerOverlay"></div>
-            
-            <div style="position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:2;" id="centerPlayBtnContainer">
+            <!-- Tombol Play Tengah Besar -->
+            <div style="position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9; transition: var(--transition);" id="centerPlayBtnContainer">
                 <button class="big-play-btn" id="mainPlayBtn">
                     <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24" id="playIconSVG"><path d="M8 5v14l11-7z"></path></svg>
                 </button>
             </div>
 
+            <!-- Kontrol Player Bawah Custom (Otomatis disembunyikan untuk Google Drive) -->
             <div class="player-controls">
                 <div class="timeline-container" id="timelineContainer">
                     <div class="timeline-progress" id="timelineProgress"></div>
@@ -446,33 +430,27 @@
                         <button class="control-btn" aria-label="Volume">
                             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M11 5L6 9H2v6h4l5 4V5z"></path></svg>
                         </button>
-                        <span class="time-display" id="timeDisplay">0:00 / 12:34</span>
+                        <span class="time-display" id="timeDisplay">0:00 / 0:00</span>
                     </div>
                     <div class="controls-right">
                         <span style="font-size: 0.8rem; font-weight: 600; margin-right: 8px;">1080p</span>
-                        <button class="control-btn" aria-label="Fullscreen">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-                        </button>
                     </div>
                 </div>
             </div>
-        </div> <!-- Penutup videoPlayerWrapper baru ada di sini setelah controls selesai -->
+        </div>
 
         <!-- CREATOR PROFILE SECTION -->
         <div class="creator-section">
             <div class="creator-info">
                 <div class="creator-avatar-container">
-                    <img class="creator-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="VibeStudio Neon Avatar">
+                    <img class="creator-avatar" src="" alt="Avatar Saluran" id="creatorAvatar">
                     <div class="creator-status"></div>
                 </div>
                 <div class="creator-text">
-                    <span class="creator-name">
-                        VibeStudio Neon
-                        <span class="creator-verified" title="Terverifikasi">
-                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
-                        </span>
+                    <span class="creator-name" id="creatorName">
+                        Nama Saluran
                     </span>
-                    <span class="creator-subs">124K Kreator Aset • 2.5jt Unduhan</span>
+                    <span class="creator-subs" id="videoViewsCount">0x ditonton • Memuat...</span>
                 </div>
             </div>
             <div class="creator-actions">
@@ -482,7 +460,6 @@
 
         <!-- ACTION ROW: DOWNLOAD & METADATA -->
         <div class="video-action-row">
-            <!-- Info Teknis -->
             <div class="technical-meta">
                 <div class="meta-item">
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
@@ -490,23 +467,22 @@
                 </div>
                 <div class="meta-item">
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <span>MP4 • 145 MB</span>
+                    <span>MP4 Mentah / Embed</span>
                 </div>
                 <div class="meta-item">
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    <span>Bebas Lisensi (Personal)</span>
+                    <span>Bebas Lisensi (Blog)</span>
                 </div>
             </div>
 
-            <!-- Tombol Download "Save to Collection" & "Download Original Video" -->
             <div class="btn-download-container">
                 <button class="btn-outline">
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
                     Simpan ke Koleksi
                 </button>
-                <button class="btn-download">
+                <button class="btn-download" id="downloadTargetBtn">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Download Video Asli
+                    Buka Link Video
                 </button>
             </div>
         </div>
@@ -520,7 +496,6 @@
                 </h3>
             </div>
             
-            <!-- User Input -->
             <div class="comment-input-area">
                 <img class="user-avatar-current" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80" alt="Avatar Anda">
                 <div class="comment-form" id="commentForm">
@@ -534,9 +509,7 @@
                 </div>
             </div>
 
-            <!-- Minimalist Comments List -->
             <div class="comments-list" id="commentsList">
-                <!-- Comment 1 -->
                 <div class="comment-item">
                     <img class="comment-avatar" src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=150&q=80" alt="Avatar Pengguna 1">
                     <div class="comment-content">
@@ -545,48 +518,11 @@
                             <span class="comment-badge">Kolektor</span>
                             <span class="comment-time">2 jam yang lalu</span>
                         </div>
-                        <p class="comment-text">Kombinasi warna violet dan lampu ambient LED di menit 04:20 estetik banget! Izin download ya mas untuk aset B-roll video projek kantor.</p>
+                        <p class="comment-text">Kombinasi warna violet dan lampu ambient LED estetik banget! Izin tonton ya mas untuk inspirasi video projek kantor.</p>
                         <div class="comment-item-actions">
                             <button class="comment-action-btn">
                                 <svg fill="currentColor" viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"></path></svg>
                                 <span>14</span>
-                            </button>
-                            <button class="comment-action-btn">Balas</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Comment 2 -->
-                <div class="comment-item">
-                    <img class="comment-avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" alt="Avatar Pengguna 2">
-                    <div class="comment-content">
-                        <div class="comment-user-meta">
-                            <span class="comment-username">Siti Rahma</span>
-                            <span class="comment-time">5 jam yang lalu</span>
-                        </div>
-                        <p class="comment-text">Mau tanya dong, itu keyboard mekanikalnya pakai tipe apa ya? Bagus banget backlight birunya serasi dengan setup ruangannya.</p>
-                        <div class="comment-item-actions">
-                            <button class="comment-action-btn">
-                                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"></path></svg>
-                                <span>8</span>
-                            </button>
-                            <button class="comment-action-btn">Balas</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Comment 3 -->
-                <div class="comment-item">
-                    <img class="comment-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" alt="Avatar Pengguna 3">
-                    <div class="comment-content">
-                        <div class="comment-user-meta">
-                            <span class="comment-username">Andi Wijaya</span>
-                            <span class="comment-badge">Kreator</span>
-                            <span class="comment-time">1 hari yang lalu</span>
-                        </div>
-                        <p class="comment-text">Definisi studio impian sesungguhnya! Detail gradasinya dapet banget di resolusi 1080p, bebas noise warna violetnya.</p>
-                        <div class="comment-item-actions">
-                            <button class="comment-action-btn">
-                                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"></path></svg>
-                                <span>5</span>
                             </button>
                             <button class="comment-action-btn">Balas</button>
                         </div>
@@ -597,15 +533,11 @@
 
         <!-- RELATED VIDEOS GRID -->
         <h3 class="related-title">Video Serupa untuk Anda</h3>
-        <div id="relatedVideosContainer">
-            <!-- Item-item ini akan digenerate melalui JavaScript, lihat bagian script di bawah -->
-        </div>
+        <div id="relatedVideosContainer"></div>
 
-        <!-- LOAD MORE BUTTON (NEW Addition) -->
+        <!-- LOAD MORE BUTTON -->
         <div class="load-more-container">
-            <button class="btn-load-more" id="loadMoreBtn">
-                Lihat Lebih Banyak
-            </button>
+            <button class="btn-load-more" id="loadMoreBtn">Lihat Lebih Banyak</button>
         </div>
 
         <!-- FOOTER -->
@@ -627,15 +559,20 @@
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = parseInt(urlParams.get('id'));
 
-        // DOM Elements untuk Halaman Video
+        // DOM Elements Konten Halaman Video
         const videoTitleEl = document.querySelector('.video-title');
-        const creatorNameEl = document.querySelector('.creator-name');
-        const creatorAvatarEl = document.querySelector('.creator-avatar');
+        const creatorNameEl = document.getElementById('creatorName');
+        const creatorAvatarEl = document.getElementById('creatorAvatar');
+        const videoViewsCountEl = document.getElementById('videoViewsCount');
+        const breadcrumbCategory = document.getElementById('breadcrumbCategory');
         const breadcrumbCurrent = document.querySelector('.breadcrumb span:last-child');
+        const downloadTargetBtn = document.getElementById('downloadTargetBtn');
         
-        // DOM Elements untuk Wadah Dinamis dan Kontrol Custom
+        // DOM Elements untuk Player Utama & Kontrol Custom
         const playerContainer = document.getElementById('playerContainer');
         const videoPlayerWrapper = document.getElementById('videoPlayerWrapper');
+        const mainPlayBtn = document.getElementById('mainPlayBtn');
+        const centerPlayBtnContainer = document.getElementById('centerPlayBtnContainer');
         const bottomPlayBtn = document.getElementById('bottomPlayBtn');
         const bottomPlayIcon = document.getElementById('bottomPlayIcon');
         const timelineProgress = document.getElementById('timelineProgress');
@@ -646,7 +583,7 @@
         const playSVG = `<path d="M8 5v14l11-7z"></path>`;
         const pauseSVG = `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>`;
 
-        // 2. Ambil data dari postingan.json
+        // 2. Ambil data dari postingan.json secara dinamis
         async function muatHalamanVideo() {
             try {
                 const response = await fetch('./postingan.json');
@@ -656,18 +593,23 @@
                 const videoData = mockVideos.find(v => v.id === videoId);
                 
                 if (videoData) {
-                    // Update Konten Halaman sesuai data JSON
+                    // Update Detail Informasi Halaman
                     videoTitleEl.textContent = videoData.title;
                     breadcrumbCurrent.textContent = videoData.title;
-                    creatorNameEl.innerHTML = `${videoData.channel} <span class="creator-verified"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg></span>`;
+                    breadcrumbCategory.textContent = videoData.category || "Berita";
                     creatorAvatarEl.src = videoData.avatar;
+                    videoViewsCountEl.textContent = `${videoData.views || '0'} ditonton • ${videoData.time || 'Baru saja'}`;
+                    creatorNameEl.innerHTML = `${videoData.channel} <span class="creator-verified"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg></span>`;
                     
-                    // Bersihkan wadah player utama sebelum memuat
+                    // Set aksi tombol download mengarah langsung ke URL video
+                    downloadTargetBtn.onclick = () => window.open(videoData.videoUrl, '_blank');
+
+                    // Bersihkan wadah player utama sebelum memuat elemen baru
                     playerContainer.innerHTML = '';
 
-                    // DETEKSI GOOGLE DRIVE EMBED ATAU MEDIA MENTAH (.mp4)
+                    // PERIKSA JENIS MEDIA (GOOGLE DRIVE EMBED ATAU MEDIA MENTAH MP4)
                     if (videoData.videoUrl.includes('drive.google.com')) {
-                        // Jika berupa link Google Drive, buat elemen iframe
+                        // Membuat elemen iframe untuk Google Drive
                         const iframe = document.createElement('iframe');
                         iframe.src = videoData.videoUrl;
                         iframe.style.width = '100%';
@@ -678,11 +620,12 @@
                         
                         playerContainer.appendChild(iframe);
                         
-                        // Sembunyikan kontrol custom bawaan template karena Google Drive memakai UI-nya sendiri
+                        // Sembunyikan semua kontrol & tombol custom karena Google Drive punya UI-nya sendiri
+                        if (centerPlayBtnContainer) centerPlayBtnContainer.style.display = 'none';
                         const customControls = document.querySelector('.player-controls');
                         if (customControls) customControls.style.display = 'none';
                     } else {
-                        // Jika berupa file MP4/video biasa, buat elemen video HTML5 asli
+                        // Membuat elemen video HTML5 asli untuk file .mp4
                         const video = document.createElement('video');
                         video.id = 'mainVideoPlayer';
                         video.src = videoData.videoUrl;
@@ -694,20 +637,23 @@
                         
                         playerContainer.appendChild(video);
                         
-                        // Tampilkan kembali kontrol custom dan jalankan fungsinya
+                        // Tampilkan kembali elemen UI kontrol custom lavendermu
+                        if (centerPlayBtnContainer) {
+                            centerPlayBtnContainer.style.display = 'block';
+                            centerPlayBtnContainer.style.opacity = '1';
+                        }
                         const customControls = document.querySelector('.player-controls');
                         if (customControls) customControls.style.display = 'flex';
                         
-                        // Daftarkan ke window global agar terbaca oleh fungsi pengendali kontrol
+                        // Daftarkan ke window objek global agar terbaca oleh fungsi pengendali
                         window.globalVideoPlayer = video;
                         inisialisasiKontrolVideo();
                     }
                 } else {
-                    // Jika ID tidak ditemukan di JSON
                     videoTitleEl.textContent = "Video Tidak Ditemukan";
                 }
 
-                // Render rekomendasi video serupa (kecuali video yang sedang diputar)
+                // Tampilkan rekomendasi video serupa (kecuali video yang sedang aktif diputar)
                 const videoSerupa = mockVideos.filter(v => v.id !== videoId);
                 renderVideos(videoSerupa);
 
@@ -716,7 +662,7 @@
             }
         }
 
-        // 3. Logika Pengendali Pemutar Video Asli (Khusus MP4 / Non-Embed)
+        // 3. Logika Pengendali Pemutar Video Asli (Khusus File Mentah / MP4)
         function inisialisasiKontrolVideo() {
             const activePlayer = window.globalVideoPlayer;
             if (!activePlayer) return;
@@ -727,24 +673,39 @@
                 return `${m}:${s < 10 ? '0' : ''}${s}`;
             }
 
-            bottomPlayBtn.addEventListener('click', () => {
+            // Fungsi tunggal untuk mengontrol Play / Pause secara bergantian
+            function eksekusiTogglePlay() {
                 if (activePlayer.paused) {
-                    activePlayer.play();
-                    bottomPlayIcon.innerHTML = pauseSVG;
+                    activePlayer.play().then(() => {
+                        bottomPlayIcon.innerHTML = pauseSVG;
+                        mainPlayBtn.innerHTML = pauseSVG;
+                        centerPlayBtnContainer.style.opacity = '0';
+                        setTimeout(() => { if(!activePlayer.paused) centerPlayBtnContainer.style.display = 'none'; }, 300);
+                        videoPlayerWrapper.classList.add('playing');
+                    }).catch(err => console.log("Playback diblokir otomatis oleh kebijakan browser."));
                 } else {
                     activePlayer.pause();
                     bottomPlayIcon.innerHTML = playSVG;
+                    mainPlayBtn.innerHTML = playSVG;
+                    centerPlayBtnContainer.style.display = 'block';
+                    setTimeout(() => centerPlayBtnContainer.style.opacity = '1', 10);
+                    videoPlayerWrapper.classList.remove('playing');
                 }
-            });
+            }
 
-            // Update Timeline Progress bar saat video berjalan
+            // Daftarkan event klik pada seluruh tombol pemicu utama
+            bottomPlayBtn.addEventListener('click', (e) => { e.stopPropagation(); eksekusiTogglePlay(); });
+            mainPlayBtn.addEventListener('click', (e) => { e.stopPropagation(); eksekusiTogglePlay(); });
+            activePlayer.addEventListener('click', eksekusiTogglePlay);
+
+            // Perbarui timeline progress bar dan teks durasi secara berkala saat video berjalan
             activePlayer.addEventListener('timeupdate', () => {
                 const persentase = (activePlayer.currentTime / activePlayer.duration) * 100;
                 timelineProgress.style.width = `${persentase}%`;
                 timeDisplay.textContent = `${formatTime(activePlayer.currentTime)} / ${formatTime(activePlayer.duration || 0)}`;
             });
 
-            // Klik pada timeline untuk melompat menit video
+            // Klik di area garis timeline untuk mencari (seek) menit video
             timelineContainer.addEventListener('click', (e) => {
                 const rect = timelineContainer.getBoundingClientRect();
                 const clickX = e.clientX - rect.left;
@@ -754,10 +715,10 @@
             });
         }
 
-        // Helper untuk render list rekomendasi di bawah
+        // 4. Merender daftar rekomendasi video serupa ke grid bawah
         const relatedContainer = document.getElementById('relatedVideosContainer');
         function renderVideos(videosList) {
-            relatedContainer.innerHTML = ''; // Bersihkan kontainer
+            relatedContainer.innerHTML = ''; 
             videosList.forEach(video => {
                 const card = document.createElement('div');
                 card.className = 'related-card';
@@ -775,8 +736,7 @@
                         </div>
                     </div>
                 `;
-                // Klik pada video rekomendasi akan memuat ulang halaman dengan ID baru
-                card.className = 'related-card';
+                // Klik pada item video serupa akan memuat ulang halaman dengan ID baru
                 card.addEventListener('click', () => {
                     window.location.href = `playground.html?id=${video.id}`;
                 });
@@ -784,13 +744,83 @@
             });
         }
 
-        // Panggil fungsi utama saat halaman dibuka
+        // Panggil fungsi inisialisasi awal saat dokumen siap dibuka
         muatHalamanVideo();
 
-        // LOGIKA SEARCH EXPANDABLE (Tetap Pertahankan)
+        // LOGIKA PENUNJANG: INTERAKSI TOMBOL IKUTI STUDIO
+        const followBtn = document.getElementById('followBtn');
+        let isFollowing = false;
+        followBtn.addEventListener('click', () => {
+            isFollowing = !isFollowing;
+            if(isFollowing) {
+                followBtn.textContent = 'Mengikuti';
+                followBtn.style.backgroundColor = 'var(--accent)';
+                followBtn.style.color = '#0a0712';
+            } else {
+                followBtn.textContent = 'Ikuti Studio';
+                followBtn.style.backgroundColor = 'rgba(180, 147, 255, 0.1)';
+                followBtn.style.color = 'var(--accent)';
+            }
+        });
+
+        // LOGIKA PENUNJANG: TAMBAH KOMENTAR DINAMIS
+        const commentInput = document.getElementById('commentInput');
+        const commentForm = document.getElementById('commentForm');
+        const commentCancelBtn = document.getElementById('commentCancelBtn');
+        const commentSubmitBtn = document.getElementById('commentSubmitBtn');
+        const commentsList = document.getElementById('commentsList');
+        const commentCountBadge = document.getElementById('commentCount');
+        let countValue = 1;
+
+        commentInput.addEventListener('focus', () => commentForm.classList.add('active'));
+        commentCancelBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            commentInput.value = '';
+            commentForm.classList.remove('active');
+            commentInput.style.height = 'auto';
+        });
+
+        commentInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        commentSubmitBtn.addEventListener('click', () => {
+            const teks = commentInput.value.trim();
+            if (teks !== '') {
+                countValue++;
+                commentCountBadge.textContent = countValue;
+                const item = document.createElement('div');
+                item.className = 'comment-item';
+                item.innerHTML = `
+                    <img class="comment-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80">
+                    <div class="comment-content">
+                        <div class="comment-user-meta">
+                            <span class="comment-username">Kamu (Kolektor)</span>
+                            <span class="comment-badge">Baru</span>
+                            <span class="comment-time">Baru saja</span>
+                        </div>
+                        <p class="comment-text">${teks.replace(/[&<>'"]/g, t => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[t]||t))}</p>
+                        <div class="comment-item-actions">
+                            <button class="comment-action-btn">👍 <span>0</span></button>
+                            <button class="comment-action-btn">Balas</button>
+                        </div>
+                    </div>
+                `;
+                commentsList.insertBefore(item, commentsList.firstChild);
+                commentInput.value = '';
+                commentForm.classList.remove('active');
+                commentInput.style.height = 'auto';
+            }
+        });
+
+        // LOGIKA PENUNJANG: MENUTUP / MEMBUKA EXPANDABLE SEARCH & NAVIGATION DRAWER
         const searchToggleBtn = document.getElementById('searchToggleBtn');
         const expandableSearch = document.getElementById('expandableSearch');
         const expandingInput = document.getElementById('searchInput');
+        const menuToggleBtn = document.getElementById('menuToggleBtn');
+        const navDrawer = document.getElementById('navDrawer');
+        const drawerOverlay = document.getElementById('drawerOverlay');
 
         searchToggleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -808,11 +838,6 @@
             }
         });
 
-        // LOGIKA MENU TOGGLE DRAWER
-        const menuToggleBtn = document.getElementById('menuToggleBtn');
-        const navDrawer = document.getElementById('navDrawer');
-        const drawerOverlay = document.getElementById('drawerOverlay');
-
         function toggleDrawer() {
             navDrawer.classList.toggle('active');
             drawerOverlay.classList.toggle('active');
@@ -820,6 +845,16 @@
         menuToggleBtn.addEventListener('click', toggleDrawer);
         drawerOverlay.addEventListener('click', toggleDrawer);
 
+        // LOGIKA PENUNJANG: SIMULASI LOADING BUTTON LIHAT LEBIH BANYAK
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        loadMoreBtn.addEventListener('click', () => {
+            loadMoreBtn.disabled = true;
+            loadMoreBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="animation: spin 0.8s linear infinite; margin-right: 8px;"><path d="M4 12a8 8 0 018-8" stroke="var(--accent)"></path></svg> Memuat...`;
+            setTimeout(() => {
+                loadMoreBtn.innerHTML = "Lihat Lebih Banyak";
+                loadMoreBtn.disabled = false;
+            }, 1000);
+        });
     </script>
 </body>
 </html>
