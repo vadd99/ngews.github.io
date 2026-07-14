@@ -151,7 +151,7 @@
         .search-icon-btn {
             background: none;
             border: none;
-            color: var(--accent); /* Menggunakan warna aksen ungu */
+            color: var(--accent);
             cursor: pointer;
             width: 44px;
             height: 44px;
@@ -250,7 +250,7 @@
             margin-left: 0;
         }
 
-        /* HERO SLIDER (Pengganti Banner) */
+        /* HERO SLIDER */
         .hero-slider-section {
             margin-bottom: 36px;
         }
@@ -276,7 +276,7 @@
             background-color: var(--bg-surface);
             border: 1px solid var(--border-color);
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            touch-action: pan-y; /* Membantu swipe vertikal bawaan browser tetap jalan saat disentuh */
+            touch-action: pan-y;
         }
 
         .slider-track {
@@ -717,7 +717,7 @@
 
         .simulated-player {
             position: relative;
-            padding-top: 56.25%; /* 16:9 screen */
+            padding-top: 56.25%;
             background-color: #000;
         }
 
@@ -873,12 +873,6 @@
             :root {
                 --sidebar-width: 220px;
             }
-            .featured-banner {
-                padding: 30px;
-            }
-            .featured-banner h1 {
-                font-size: 1.6rem;
-            }
         }
 
         @media (max-width: 768px) {
@@ -948,7 +942,6 @@
                 padding: 6px 12px;
                 font-size: 0.75rem;
             }
-            /* Search bar adjustment for tiny mobile screen */
             .expandable-search.active .search-input-expanding {
                 width: 220px;
             }
@@ -1029,15 +1022,9 @@
 
             <p class="sidebar-title">Kategori Unggulan</p>
             <ul class="sidebar-menu">
-                <li class="sidebar-item">
-                    <a href="#">🎮 Gaming</a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="#">🎵 Musik</a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="#">💻 Teknologi</a>
-                </li>
+                <li class="sidebar-item"><a href="#">🎮 Gaming</a></li>
+                <li class="sidebar-item"><a href="#">🎵 Musik</a></li>
+                <li class="sidebar-item"><a href="#">💻 Teknologi</a></li>
             </ul>
         </aside>
 
@@ -1048,9 +1035,7 @@
             <section class="hero-slider-section">
                 <div class="badge-premium">Video Rekomendasi</div>
                 <div class="slider-container" id="heroSliderContainer">
-                    <div class="slider-track" id="heroSliderTrack">
-                        <!-- JS akan menyuntikkan 10 slide thumbnail di sini -->
-                    </div>
+                    <div class="slider-track" id="heroSliderTrack"></div>
                     <button class="slider-nav prev" id="sliderPrev" aria-label="Sebelumnya">❮</button>
                     <button class="slider-nav next" id="sliderNext" aria-label="Selanjutnya">❯</button>
                     <div class="slider-dots" id="sliderDots"></div>
@@ -1063,42 +1048,29 @@
             </section>
 
             <!-- Video Grid -->
-            <div class="video-grid" id="videoGrid">
-                <!-- Data dimuat dari Javascript -->
-            </div>
+            <div class="video-grid" id="videoGrid"></div>
 
             <!-- BOTTOM TAGS SECTION -->
             <section class="bottom-tags-section">
-                <!-- Jenis Tag 1: Tag Video -->
+                <!-- Jenis Tag 1: Kategori Video (Dinamis) -->
                 <div class="tags-group">
                     <h3 class="tags-group-title">
                         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 7h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         Temukan Berdasarkan <span>Kategori Video</span>
                     </h3>
-                    <div class="tags-container">
-                        <div class="tag-pill active">Semua</div>
-                        <div class="tag-pill">Berita Terkini</div>
-                        <div class="tag-pill">Sinematik</div>
-                        <div class="tag-pill">Tutorial</div>
-                        <div class="tag-pill">Vlog Perjalanan</div>
-                        <div class="tag-pill">Eksperimen</div>
-                        <div class="tag-pill">Ulasan Tech</div>
+                    <div class="tags-container" id="categoryTagsContainer">
+                        <!-- Disuntikkan via JS -->
                     </div>
                 </div>
 
-                <!-- Jenis Tag 2: Tag Negara -->
+                <!-- Jenis Tag 2: Tag Negara (Dinamis) -->
                 <div class="tags-group">
                     <h3 class="tags-group-title">
                         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Jelajahi Kreator dari <span>Negara</span>
                     </h3>
-                    <div class="tags-container">
-                        <div class="tag-pill active">Global</div>
-                        <div class="tag-pill">🇮🇩 Indonesia</div>
-                        <div class="tag-pill">🇯🇵 Jepang</div>
-                        <div class="tag-pill">🇰🇷 Korea Selatan</div>
-                        <div class="tag-pill">🇺🇸 Amerika Serikat</div>
-                        <div class="tag-pill">🇬🇧 Inggris</div>
+                    <div class="tags-container" id="countryTagsContainer">
+                        <!-- Disuntikkan via JS -->
                     </div>
                 </div>
             </section>
@@ -1211,9 +1183,7 @@
             }
         });
 
-        expandingInput.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
+        expandingInput.addEventListener('click', (e) => { e.stopPropagation(); });
 
         document.addEventListener('click', (e) => {
             if (expandableSearch.classList.contains('active') && expandingInput.value === '') {
@@ -1221,9 +1191,8 @@
             }
         });
 
-
         // STATE DATA UTAMA
-        let mockVideos = []; // Akan diisi data asli dari postingan.json
+        let mockVideos = [];
         let kategoriAktif = 'Semua';
         let negaraAktif = 'Global';
 
@@ -1233,12 +1202,13 @@
                 const response = await fetch('./postingan.json');
                 mockVideos = await response.json();
                 
-                // Render pertama kali saat halaman dibuka
+                // Render komponen utama
                 renderVideos(mockVideos);
                 inisialisasiSlider(); 
+                buatTagsDinamis(); // Generate Tag secara otomatis
             } catch (error) {
                 console.error("Gagal memuat data postingan:", error);
-                videoGrid.innerHTML = `
+                document.getElementById('videoGrid').innerHTML = `
                     <div style="grid-column: span 2; text-align: center; padding: 40px; color: #ff6b6b">
                         <p style="font-size: 1.2rem; margin-bottom: 8px;">Gagal memuat postingan</p>
                         <p style="font-size: 0.9rem;">Pastikan file postingan.json sudah di-upload ke repo.</p>
@@ -1250,8 +1220,53 @@
         // AMBIL DATA KETIKA HALAMAN SIAP
         ambilDataPostingan();
 
+        // GENERATE TAGS KATEGORI & NEGARA SECARA DINAMIS
+        function buatTagsDinamis() {
+            const categoryContainer = document.getElementById('categoryTagsContainer');
+            const countryContainer = document.getElementById('countryTagsContainer');
 
-        // HERO SLIDER LOGIC (Dinamis Berdasarkan Data JSON)
+            // Set Data Struktur Unik untuk menghindari duplikasi
+            const setKategori = new Set(['Semua']);
+            const setNegara = new Set(['Global']);
+
+            // Kumpulkan kategori dan negara unik yang ada di JSON
+            mockVideos.forEach(video => {
+                if (video.category) setKategori.add(video.category.trim());
+                if (video.country) setNegara.add(video.country.trim());
+            });
+
+            // Render Tag Kategori
+            categoryContainer.innerHTML = '';
+            setKategori.forEach(kategori => {
+                const pill = document.createElement('div');
+                pill.className = `tag-pill ${kategori === kategoriAktif ? 'active' : ''}`;
+                pill.textContent = kategori;
+                pill.addEventListener('click', () => {
+                    document.querySelectorAll('#categoryTagsContainer .tag-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    kategoriAktif = kategori;
+                    jalankanFilterSistem();
+                });
+                categoryContainer.appendChild(pill);
+            });
+
+            // Render Tag Negara
+            countryContainer.innerHTML = '';
+            setNegara.forEach(negara => {
+                const pill = document.createElement('div');
+                pill.className = `tag-pill ${negara === negaraAktif ? 'active' : ''}`;
+                pill.textContent = negara;
+                pill.addEventListener('click', () => {
+                    document.querySelectorAll('#countryTagsContainer .tag-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    negaraAktif = negara;
+                    jalankanFilterSistem();
+                });
+                countryContainer.appendChild(pill);
+            });
+        }
+
+        // HERO SLIDER LOGIC
         const sliderTrack = document.getElementById('heroSliderTrack');
         const sliderDots = document.getElementById('sliderDots');
         const sliderPrev = document.getElementById('sliderPrev');
@@ -1263,7 +1278,7 @@
         let autoPlaySlider;
         
         function inisialisasiSlider() {
-            sliderVideos = mockVideos.slice(0, 10); // Ambil maks 10 video terbaru
+            sliderVideos = mockVideos.slice(0, 10);
             if (sliderVideos.length === 0) return;
 
             sliderTrack.innerHTML = '';
@@ -1279,9 +1294,8 @@
                 playBtn.className = 'hero-play-btn';
                 playBtn.innerHTML = `<svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>`;
                 playBtn.addEventListener('click', () => {
-    window.location.href = `playground.html?id=${video.id}`;
-});
-
+                    window.location.href = `playground.html?id=${video.id}`;
+                });
                 
                 slide.appendChild(playBtn);
                 sliderTrack.appendChild(slide);
@@ -1295,7 +1309,6 @@
                 sliderDots.appendChild(dot);
             });
 
-            // Set Ulang Autoplay
             clearInterval(autoPlaySlider);
             autoPlaySlider = setInterval(nextSlide, 5000);
         }
@@ -1323,18 +1336,11 @@
         sliderNext.addEventListener('click', nextSlide);
         sliderPrev.addEventListener('click', prevSlide);
         
-        // Touch & Swipe Logic
+        // Swipe Logic
         let touchStartX = 0;
         let touchEndX = 0;
-        
-        heroSliderContainer.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, {passive: true});
-        
-        heroSliderContainer.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, {passive: true});
+        heroSliderContainer.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+        heroSliderContainer.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, {passive: true});
         
         function handleSwipe() {
             const threshold = 50;
@@ -1347,7 +1353,6 @@
             clearInterval(autoPlaySlider);
             autoPlaySlider = setInterval(nextSlide, 5000);
         });
-
 
         // RENDER VIDEO ITEMS TO GRID
         const videoGrid = document.getElementById('videoGrid');
@@ -1397,15 +1402,12 @@
                         </div>
                     </div>
                 `;
-                
                 videoCard.addEventListener('click', () => {
                     window.location.href = `playground.html?id=${video.id}`;
                 });
-                
                 videoGrid.appendChild(videoCard);
             });
         }
-
 
         // RESPONSIVE SIDEBAR TOGGLE
         const menuToggleBtn = document.getElementById('menuToggleBtn');
@@ -1425,15 +1427,9 @@
             if (!sidebar.contains(e.target) && !menuToggleBtn.contains(e.target)) {
                 if (window.innerWidth <= 768) {
                     sidebar.classList.remove('active');
-                } else {
-                    if (!sidebar.classList.contains('collapsed')) {
-                        sidebar.classList.add('collapsed');
-                        mainContent.classList.add('expanded');
-                    }
                 }
             }
         });
-
 
         // LIVE SEARCH & FILTER COMBINATION LOGIC
         function jalankanFilterSistem() {
@@ -1441,8 +1437,8 @@
             
             const hasilFilter = mockVideos.filter(video => {
                 const cocokKeyword = video.title.toLowerCase().includes(keyword) || video.channel.toLowerCase().includes(keyword);
-                const cocokKategori = (kategoriAktif === 'Semua' || video.category === kategoriAktif);
-                const cocokNegara = (negaraAktif === 'Global' || video.country === negaraAktif);
+                const cocokKategori = (kategoriAktif === 'Semua' || (video.category && video.category.trim() === kategoriAktif));
+                const cocokNegara = (negaraAktif === 'Global' || (video.country && video.country.trim() === negaraAktif));
                 
                 return cocokKeyword && cocokKategori && cocokNegara;
             });
@@ -1451,133 +1447,6 @@
         }
 
         expandingInput.addEventListener('input', jalankanFilterSistem);
-
-
-        // BOTTOM TAGS INTERACTIVE SELECTION
-        const tagPills = document.querySelectorAll('.tag-pill');
-        tagPills.forEach(pill => {
-            pill.addEventListener('click', () => {
-                const group = pill.parentElement;
-                group.querySelectorAll('.tag-pill').forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
-
-                // Bersihkan emoji untuk pencocokan string data murni
-                const teksTag = pill.textContent.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD00-\uDFFF]/g, '').trim();
-                const judulGrup = group.previousElementSibling.textContent.toLowerCase();
-
-                if (judulGrup.includes('kategori')) {
-                    kategoriAktif = teksTag;
-                } else if (judulGrup.includes('negara')) {
-                    negaraAktif = teksTag;
-                }
-
-                jalankanFilterSistem();
-            });
-        });
-
-
-        // MODAL INTERACTIVE & VIDEO PLAYER LOGIC
-        const videoModal = document.getElementById('videoModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const modalVideoTitle = document.getElementById('modalVideoTitle');
-        const modalChannelName = document.getElementById('modalChannelName');
-        const modalChannelAvatar = document.getElementById('modalChannelAvatar');
-        const playerVisuals = document.getElementById('playerVisuals');
-        const modalPlayTrigger = document.getElementById('modalPlayTrigger');
-        const playingText = document.getElementById('playingText');
-        const playerTimeline = document.getElementById('playerTimeline');
-        const subBtn = document.getElementById('subBtn');
-        const likeBtn = document.getElementById('likeBtn');
-        const likeCount = document.getElementById('likeCount');
-
-        let isPlaying = false;
-        let playInterval;
-
-        function openVideoModal(video) {
-            modalVideoTitle.textContent = video.title;
-            modalChannelName.innerHTML = `${video.channel} <span class="verified-badge"><svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg></span>`;
-            modalChannelAvatar.src = video.avatar;
-            playerVisuals.style.backgroundImage = `url('${video.thumbnail}')`;
-            
-            // Mengatur Ulang State Player Simulasi bawaan agar segar saat dibuka
-            isPlaying = false;
-            playingText.textContent = "KLIK UNTUK MEMUTAR VIDEO";
-            playingText.style.color = "var(--accent)";
-            playerTimeline.style.width = "0%";
-            modalPlayTrigger.style.display = 'flex';
-            clearInterval(playInterval);
-
-            likeCount.textContent = (Math.floor(Math.random() * 100) + 10) + "RB";
-            likeBtn.classList.remove('active');
-
-            subBtn.textContent = 'Subscribe';
-            subBtn.classList.add('active');
-            subBtn.style.backgroundColor = '';
-            subBtn.style.color = '';
-
-            videoModal.classList.add('active');
-            document.body.style.overflow = 'hidden'; 
-        }
-
-        closeModalBtn.addEventListener('click', () => {
-            videoModal.classList.remove('active');
-            document.body.style.overflow = ''; 
-            clearInterval(playInterval);
-        });
-
-        videoModal.addEventListener('click', (e) => {
-            if (e.target === videoModal) {
-                videoModal.classList.remove('active');
-                document.body.style.overflow = '';
-                clearInterval(playInterval);
-            }
-        });
-
-        modalPlayTrigger.addEventListener('click', toggleSimulatedPlay);
-        playerVisuals.addEventListener('click', toggleSimulatedPlay);
-
-        function toggleSimulatedPlay(e) {
-            if (e) e.stopPropagation();
-            if(!isPlaying) {
-                isPlaying = true;
-                playingText.textContent = "🎥 MEMUTAR VIDEO...";
-                playingText.style.color = "#10b981"; 
-                modalPlayTrigger.style.display = 'none';
-                
-                let progress = 0;
-                playInterval = setInterval(() => {
-                    progress += 0.5;
-                    if(progress >= 100) progress = 0;
-                    playerTimeline.style.width = progress + '%';
-                }, 100);
-            } else {
-                isPlaying = false;
-                playingText.textContent = "PAUSED";
-                playingText.style.color = "#f59e0b"; 
-                modalPlayTrigger.style.display = 'flex';
-                clearInterval(playInterval);
-            }
-        }
-
-        subBtn.addEventListener('click', () => {
-            if(subBtn.classList.contains('active')) {
-                subBtn.classList.remove('active');
-                subBtn.textContent = 'Subscribed';
-                subBtn.style.backgroundColor = 'var(--bg-surface-hover)';
-                subBtn.style.color = 'var(--text-muted)';
-            } else {
-                subBtn.classList.add('active');
-                subBtn.textContent = 'Subscribe';
-                subBtn.style.backgroundColor = '';
-                subBtn.style.color = '';
-            }
-        });
-
-        likeBtn.addEventListener('click', () => {
-            likeBtn.classList.toggle('active');
-        });
-
-
     </script>
 </body>
 </html>
