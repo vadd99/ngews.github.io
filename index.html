@@ -1006,6 +1006,30 @@
             }
         });
 
+        // TOGGLE MENU UTAMA & MOBILE SIDEBAR
+        const menuToggleBtn = document.getElementById('menuToggleBtn');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+
+        menuToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (window.innerWidth > 768) {
+                // Desktop mode: Perkecil/perlebar margin konten
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            } else {
+                // Mobile mode: Tarik drawer keluar/masuk
+                sidebar.classList.toggle('active');
+            }
+        });
+
+        // Tutup sidebar mobile secara otomatis jika pengguna klik area luar sidebar
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !menuToggleBtn.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
         // SIDEBAR DROPDOWN INTERACTION
         const dropdownToggleBtn = document.getElementById('dropdownToggleBtn');
         dropdownToggleBtn.addEventListener('click', (e) => {
@@ -1076,7 +1100,6 @@
             const setKategori = new Set();
 
             mockVideos.forEach(video => {
-                // Memberikan proteksi penuh agar value string yang kosong/null tidak merusak runtime JavaScript
                 if (video.category && video.category.toString().trim() !== "") {
                     setKategori.add(video.category.toString().trim());
                 }
@@ -1103,7 +1126,7 @@
                     jalankanFilterSistem();
 
                     if (window.innerWidth <= 768) {
-                        document.getElementById('sidebar').classList.remove('active');
+                        sidebar.classList.remove('active');
                     }
                 });
                 sidebarSubmenu.appendChild(li);
@@ -1151,7 +1174,7 @@
             jalankanFilterSistem();
 
             if (window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('active');
+                sidebar.classList.remove('active');
             }
         });
 
