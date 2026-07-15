@@ -7,107 +7,114 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        :root { --bg-base: #0a0712; --bg-surface: #120d24; --accent: #b493ff; --text-main: #f3f1f6; --text-muted: #9e97b2; --border-color: #231b3d; }
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        :root {
+            --bg-base: #0a0712;
+            --bg-surface: #120d24;
+            --accent: #b493ff;
+            --text-main: #f3f1f6;
+            --text-muted: #9e97b2;
+            --border-color: #231b3d;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg-base); color: var(--text-main); padding-bottom: 60px; }
-        
+
         .admin-container { max-width: 800px; margin: 40px auto; padding: 0 24px; }
         .form-card { background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-        label { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group.full-width { grid-column: span 2; }
         
-        input, select { background-color: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); padding: 14px 16px; border-radius: 10px; width: 100%; outline: none; transition: 0.3s; }
-        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(180, 147, 255, 0.2); }
+        input, select { background-color: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 8px; width: 100%; outline: none; }
+        input:focus, select:focus { border-color: var(--accent); }
         
-        .btn-submit { background-color: var(--accent); color: #0a0712; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1.05rem; margin-top: 10px; }
-        .btn-submit:disabled { background-color: #4a4365; color: #8e87a3; cursor: not-allowed; }
+        .alert-box { padding: 16px; border-radius: 10px; margin-bottom: 20px; display: none; text-align: center; font-weight: 600; }
+        .alert-success { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #10b981; }
+        .alert-error { background: rgba(255, 107, 107, 0.2); border: 1px solid #ff6b6b; color: #ff6b6b; }
         
-        .alert-box { padding: 16px; border-radius: 10px; margin-bottom: 24px; display: none; text-align: center; font-weight: 600; }
-        .alert-success { background-color: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; }
-        .alert-error { background-color: rgba(255, 107, 107, 0.15); border: 1px solid #ff6b6b; color: #ff6b6b; }
+        .btn-submit { background: var(--accent); color: #0a0712; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        .btn-submit:disabled { background: #4a4365; cursor: not-allowed; }
+        .btn-toggle { background: none; border: none; color: var(--accent); cursor: pointer; text-align: left; font-size: 0.8rem; padding-top: 4px; font-weight: 600; }
+        .btn-toggle:hover { text-decoration: underline; }
+        
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .form-group.full-width { grid-column: span 1; } }
     </style>
 </head>
 <body>
 
     <div class="admin-container">
-        <h1 style="margin-bottom: 8px;">Tambah Video Baru</h1>
-        <p style="color: var(--text-muted); margin-bottom: 30px;">Kategori, Negara, dan Channel otomatis tersinkronisasi.</p>
-
+        <h1 style="margin-bottom: 20px;">Tambah Video Baru</h1>
         <div class="alert-box alert-success" id="successAlert">✅ Video berhasil dipublikasikan!</div>
-        <div class="alert-box alert-error" id="errorAlert">❌ Terjadi kesalahan.</div>
-        
+        <div class="alert-box alert-error" id="errorAlert">❌ Gagal mengupload data.</div>
+
         <div class="form-card">
             <form id="uploadForm">
-                
-                <div class="form-group">
-                    <label>Judul Video</label>
-                    <input type="text" id="inpTitle" placeholder="Masukkan judul..." required>
-                </div>
-                
-                <div class="form-group">
-                    <label>URL Video & Thumbnail</label>
-                    <input type="url" id="inpVideoUrl" placeholder="https://... (URL Video)" required style="margin-bottom: 10px;">
-                    <input type="url" id="inpThumbnail" placeholder="https://... (URL Thumbnail)" required>
-                </div>
-
-                <!-- KATEGORI & NEGARA -->
-                <!-- Penjelasan: Input ini memungkinkan kamu memilih dropdown, ATAU langsung mengetik teks baru di dalamnya -->
-                <div class="form-group">
-                    <label>Kategori</label>
-                    <input list="categoryList" id="inpCategory" placeholder="Klik untuk pilih, atau ketik manual jika baru..." autocomplete="off" required>
-                    <datalist id="categoryList">
-                        <!-- Opsi default jika database kosong -->
-                        <option value="Berita"></option>
-                        <option value="Hiburan"></option>
-                    </datalist>
-                </div>
-                
-                <div class="form-group">
-                    <label>Negara</label>
-                    <input list="countryList" id="inpCountry" placeholder="Klik untuk pilih, atau ketik manual jika baru..." autocomplete="off" required>
-                    <datalist id="countryList">
-                        <option value="Global"></option>
-                        <option value="Indonesia"></option>
-                    </datalist>
-                </div>
-
-                <!-- CHANNEL SELECTOR -->
-                <div class="form-group">
-                    <label>Channel</label>
-                    <select id="inpChannel" required>
-                        <!-- Opsi kosong wajib agar event 'change' bisa dipicu -->
-                        <option value="" disabled selected>-- Pilih Channel --</option>
-                        <option value="new">➕ Buat Channel Baru</option>
-                    </select>
+                <div class="form-grid">
                     
-                    <!-- Kotak ini akan muncul otomatis saat "Buat Channel Baru" dipilih -->
-                    <input type="text" id="newChannelName" placeholder="Ketik Nama Channel Baru..." style="display:none; margin-top:10px;">
-                    <input type="url" id="inpAvatar" placeholder="URL Avatar Profil Kreator (Opsional)" style="margin-top:10px;">
-                </div>
-
-                <div class="form-group">
-                    <label>Durasi (Contoh: 05:30)</label>
-                    <input type="text" id="inpDuration" placeholder="00:00" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Tags (Pilih yang ada atau tambah baru)</label>
-                    <div id="tagsContainer" style="display:flex; flex-wrap:wrap; gap:10px; background:var(--bg-base); padding:15px; border-radius:10px; border: 1px solid var(--border-color);">
-                        <!-- Tag dari firebase akan masuk ke sini -->
+                    <div class="form-group full-width"><label>Judul Video</label><input type="text" id="inpTitle" required></div>
+                    <div class="form-group"><label>URL Video</label><input type="url" id="inpVideoUrl" required></div>
+                    <div class="form-group"><label>URL Thumbnail</label><input type="url" id="inpThumbnail" required></div>
+                    
+                    <!-- KATEGORI -->
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <select id="inpCategorySelect">
+                            <option value="" disabled selected>Pilih Kategori...</option>
+                        </select>
+                        <input type="text" id="inpCategoryManual" placeholder="Tulis kategori baru" style="display:none; margin-top:5px;">
+                        <button type="button" class="btn-toggle" id="btnTogCat">+ Tambah Kategori Baru</button>
                     </div>
-                    <input type="text" id="inpNewTags" placeholder="Ketik tag baru di sini (pisahkan dengan koma)..." style="margin-top:10px;">
-                </div>
 
+                    <!-- NEGARA -->
+                    <div class="form-group">
+                        <label>Negara</label>
+                        <select id="inpCountrySelect">
+                            <option value="" disabled selected>Pilih Negara...</option>
+                        </select>
+                        <input type="text" id="inpCountryManual" placeholder="Tulis negara baru" style="display:none; margin-top:5px;">
+                        <button type="button" class="btn-toggle" id="btnTogCountry">+ Tambah Negara Baru</button>
+                    </div>
+
+                    <!-- CHANNEL -->
+                    <div class="form-group">
+                        <label>Channel</label>
+                        <select id="inpChannelSelect">
+                            <option value="" disabled selected>Pilih Channel...</option>
+                        </select>
+                        <input type="text" id="inpChannelManual" placeholder="Nama channel baru" style="display:none; margin-top:5px;">
+                        <button type="button" class="btn-toggle" id="btnTogChannel">+ Channel Baru</button>
+                    </div>
+
+                    <div class="form-group"><label>URL Avatar Kreator</label><input type="url" id="inpAvatar"></div>
+
+                    <!-- DURASI (Desain 3 Kolom) -->
+                    <div class="form-group full-width">
+                        <label>Durasi Video</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="durJam"></select>
+                            <select id="durMenit"></select>
+                            <select id="durDetik"></select>
+                        </div>
+                    </div>
+
+                    <!-- TAGS -->
+                    <div class="form-group full-width">
+                        <label>Tags (Pilih yang sudah ada)</label>
+                        <div id="tagsContainer" style="display:flex; flex-wrap:wrap; gap:10px; background:var(--bg-base); padding:15px; border-radius:8px;"></div>
+                        <input type="text" id="inpTagsManual" placeholder="Tambah tag baru (pisahkan koma)" style="margin-top: 10px;">
+                    </div>
+                </div>
                 <button type="submit" class="btn-submit" id="btnSubmit">Publikasikan Video</button>
             </form>
         </div>
     </div>
 
+    <!-- SCRIPT MODULAR -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Konfigurasi Firebase Anda
+        // Konfigurasi lengkap milikmu
         const firebaseConfig = {
             apiKey: "AIzaSyA8-TN3r2KNL-XEHZ5lF3-rkVyj2qQe9so",
             authDomain: "ngews-web.firebaseapp.com",
@@ -119,159 +126,143 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
-        let channelMap = {};
 
-        // 1. FUNGSI LOAD DATA (DIPERBAIKI)
-        async function loadAdminData() {
+        let channelMap = {}; 
+        
+        // Pendaftaran Variabel DOM secara aman
+        const durJam = document.getElementById('durJam');
+        const durMenit = document.getElementById('durMenit');
+        const durDetik = document.getElementById('durDetik');
+        
+        const inpCategorySelect = document.getElementById('inpCategorySelect');
+        const inpCategoryManual = document.getElementById('inpCategoryManual');
+        const inpCountrySelect = document.getElementById('inpCountrySelect');
+        const inpCountryManual = document.getElementById('inpCountryManual');
+        const inpChannelSelect = document.getElementById('inpChannelSelect');
+        const inpChannelManual = document.getElementById('inpChannelManual');
+        const inpAvatar = document.getElementById('inpAvatar');
+        
+        const tagsContainer = document.getElementById('tagsContainer');
+        const uploadForm = document.getElementById('uploadForm');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const successAlert = document.getElementById('successAlert');
+        const errorAlert = document.getElementById('errorAlert');
+
+        // Logika Tombol Toggle
+        document.getElementById('btnTogCat').addEventListener('click', () => { inpCategoryManual.style.display = 'block'; inpCategorySelect.value = ""; });
+        document.getElementById('btnTogCountry').addEventListener('click', () => { inpCountryManual.style.display = 'block'; inpCountrySelect.value = ""; });
+        document.getElementById('btnTogChannel').addEventListener('click', () => { inpChannelManual.style.display = 'block'; inpChannelSelect.value = ""; inpAvatar.value = ""; });
+
+        // Auto-isi Avatar saat Channel dipilih
+        inpChannelSelect.addEventListener('change', () => {
+            const val = inpChannelSelect.value;
+            if(val && channelMap[val]) inpAvatar.value = channelMap[val];
+            inpChannelManual.style.display = 'none'; // Sembunyikan manual jika milih select
+            inpChannelManual.value = "";
+        });
+
+        // FUNGSI INISIALISASI DATA DARI FIREBASE
+        async function initForm() {
             try {
-                const querySnapshot = await getDocs(collection(db, "videos"));
+                // Generate Opsi Durasi
+                for(let i=0; i<=5; i++) durJam.innerHTML += `<option value="${i}">${i} Jam</option>`;
+                for(let i=0; i<60; i++) {
+                    const pad = i.toString().padStart(2,'0');
+                    durMenit.innerHTML += `<option value="${pad}">${pad} Menit</option>`;
+                    durDetik.innerHTML += `<option value="${pad}">${pad} Detik</option>`;
+                }
+
+                // Ambil Data dari Firestore
+                const snapshot = await getDocs(collection(db, "videos"));
                 const cats = new Set(), counts = new Set(), tags = new Set();
                 
-                querySnapshot.forEach(doc => {
+                snapshot.forEach(doc => {
                     const d = doc.data();
-                    
-                    // Kumpulkan data unik
                     if(d.category) cats.add(d.category);
                     if(d.country) counts.add(d.country);
-                    
-                    // Amankan data tags (hanya proses jika bentuknya Array)
-                    if(d.tags && Array.isArray(d.tags)) {
-                        d.tags.forEach(t => tags.add(t));
-                    }
-                    
-                    // Amankan dan kumpulkan data channel
-                    if(d.channel) { 
-                        channelMap[d.channel] = d.avatar || ""; 
-                        const sel = document.getElementById('inpChannel');
-                        // Cek apakah channel sudah ada di opsi dropdown
-                        if(![...sel.options].some(o => o.value === d.channel)) {
-                            const newOption = document.createElement('option');
-                            newOption.value = d.channel;
-                            newOption.textContent = d.channel;
-                            sel.appendChild(newOption);
-                        }
-                    }
+                    if(d.tags && Array.isArray(d.tags)) d.tags.forEach(t => tags.add(t));
+                    if(d.channel) channelMap[d.channel] = d.avatar || "";
                 });
+
+                // Cetak Opsi ke HTML
+                cats.forEach(c => inpCategorySelect.innerHTML += `<option value="${c}">${c}</option>`);
+                counts.forEach(c => inpCountrySelect.innerHTML += `<option value="${c}">${c}</option>`);
+                Object.keys(channelMap).forEach(ch => inpChannelSelect.innerHTML += `<option value="${ch}">${ch}</option>`);
                 
-                // Eksekusi DOM Injection secara aman
-                const catList = document.getElementById('categoryList');
-                cats.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c;
-                    catList.appendChild(opt);
-                });
-
-                const countryList = document.getElementById('countryList');
-                counts.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c;
-                    countryList.appendChild(opt);
-                });
-
-                const tagCont = document.getElementById('tagsContainer');
                 tags.forEach(t => {
                     if (t.trim() !== "") {
-                        tagCont.innerHTML += `<label style="cursor:pointer; color:var(--text-main); font-size:0.85rem;"><input type="checkbox" value="${t}"> ${t}</label>`;
+                        tagsContainer.innerHTML += `<label style="font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="tag-check" value="${t}"> ${t}</label>`;
                     }
                 });
 
-            } catch (error) {
-                console.error("Gagal mengambil data Firebase:", error);
+            } catch (err) {
+                console.error("Gagal memuat data dari Firebase: ", err);
             }
         }
 
-        // Pastikan loadAdminData berjalan HANYA setelah seluruh elemen HTML siap
-        window.addEventListener('DOMContentLoaded', loadAdminData);
-
-
-        // 2. LOGIKA DROPDOWN CHANNEL (DIPERBAIKI)
-        document.getElementById('inpChannel').addEventListener('change', (e) => {
-            const newNameInp = document.getElementById('newChannelName');
-            const avInp = document.getElementById('inpAvatar');
-            const terpilih = e.target.value;
-            
-            if(terpilih === 'new') {
-                // Tampilkan input nama channel baru dan paksa user mengisi
-                newNameInp.style.display = 'block';
-                newNameInp.setAttribute('required', 'true');
-                avInp.value = "";
-            } else {
-                // Sembunyikan input nama channel, otomatis isi avatar dari riwayat
-                newNameInp.style.display = 'none';
-                newNameInp.removeAttribute('required');
-                avInp.value = channelMap[terpilih] || "";
-            }
-        });
-
-
-        // 3. LOGIKA SUBMIT POSTINGAN KE FIREBASE
-        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        // FUNGSI SUBMIT FORM
+        uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const btn = document.getElementById('btnSubmit');
-            const errAlert = document.getElementById('errorAlert');
-            const sucAlert = document.getElementById('successAlert');
-            
-            // Efek Loading Tombol
-            btn.disabled = true; 
-            btn.textContent = "Mengunggah Data ke Database...";
-            errAlert.style.display = 'none';
-            sucAlert.style.display = 'none';
-
-            // Menentukan Nama Channel yang valid
-            const selChannel = document.getElementById('inpChannel').value;
-            const channelName = (selChannel === 'new') ? document.getElementById('newChannelName').value.trim() : selChannel;
-
-            // Menggabungkan Tags (Checkbox + Ketikan Manual)
-            const checkedTags = [...document.querySelectorAll('#tagsContainer input:checked')].map(i => i.value);
-            
-            let manualTags = [];
-            const manualTagInput = document.getElementById('inpNewTags').value;
-            if (manualTagInput.trim() !== "") {
-                manualTags = manualTagInput.split(',').map(t => t.trim()).filter(t => t !== "");
-            }
-            
-            // Gabungkan lalu buang duplikat
-            const finalTags = [...new Set([...checkedTags, ...manualTags])];
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = "Mengunggah Data...";
+            successAlert.style.display = 'none';
+            errorAlert.style.display = 'none';
 
             try {
-                // Eksekusi penambahan dokumen ke Firebase
+                // Menghitung Final Tags
+                const finalTags = Array.from(document.querySelectorAll('.tag-check:checked')).map(c => c.value);
+                const extraTags = document.getElementById('inpTagsManual').value.split(',').map(t => t.trim()).filter(t => t);
+                
+                // Format Durasi Pintar: Jika 0 Jam, hanya tampilkan MM:SS
+                let jam = durJam.value;
+                let menit = durMenit.value;
+                let detik = durDetik.value;
+                let finalDuration = (jam === "0") ? `${menit}:${detik}` : `${jam}:${menit}:${detik}`;
+
+                // Kirim Payload ke Firestore
                 await addDoc(collection(db, "videos"), {
                     title: document.getElementById('inpTitle').value.trim(),
                     videoUrl: document.getElementById('inpVideoUrl').value.trim(),
                     thumbnail: document.getElementById('inpThumbnail').value.trim(),
-                    category: document.getElementById('inpCategory').value.trim(),
-                    country: document.getElementById('inpCountry').value.trim(),
-                    channel: channelName,
-                    avatar: document.getElementById('inpAvatar').value.trim() || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde",
-                    duration: document.getElementById('inpDuration').value.trim(),
-                    tags: finalTags,
+                    
+                    // Prioritaskan input manual, jika kosong ambil dari dropdown
+                    category: inpCategoryManual.value.trim() || inpCategorySelect.value,
+                    country: inpCountryManual.value.trim() || inpCountrySelect.value,
+                    channel: inpChannelManual.value.trim() || inpChannelSelect.value,
+                    
+                    avatar: inpAvatar.value.trim() || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde",
+                    duration: finalDuration,
+                    tags: [...new Set([...finalTags, ...extraTags])],
+                    
                     views: 0, 
                     likes: 0, 
                     dislikes: 0, 
                     comments: [],
                     uploadDate: serverTimestamp()
                 });
+
+                successAlert.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => successAlert.style.display = 'none', 4000);
                 
-                // Jika sukses
-                sucAlert.style.display = 'block';
-                document.getElementById('uploadForm').reset();
-                document.getElementById('newChannelName').style.display = 'none';
+                // Reset form dan sembunyikan kotak input manual kembali
+                uploadForm.reset();
+                inpCategoryManual.style.display = 'none';
+                inpCountryManual.style.display = 'none';
+                inpChannelManual.style.display = 'none';
                 
-                // Hilangkan notif setelah 3 detik
-                setTimeout(() => { sucAlert.style.display = 'none'; }, 3000);
-                
-            } catch (err) { 
+            } catch (err) {
+                errorAlert.textContent = "❌ Gagal: " + err.message;
+                errorAlert.style.display = 'block';
                 console.error(err);
-                errAlert.textContent = "❌ Gagal: " + err.message;
-                errAlert.style.display = 'block';
             } finally { 
-                // Kembalikan tombol ke semula
-                btn.disabled = false; 
-                btn.textContent = "Publikasikan Video"; 
+                btnSubmit.disabled = false; 
+                btnSubmit.textContent = "Publikasikan Video";
             }
         });
+
+        // Jalankan saat pertama kali dirender
+        initForm();
     </script>
 </body>
 </html>
