@@ -141,6 +141,9 @@
                 
                 await addDoc(collection(db, "videos"), {
                     title: inpTitle.value,
+                    // KITA TAMBAHKAN KEMBALI DI SINI:
+                    videoUrl: inpVideoUrl.value,
+                    thumbnail: inpThumbnail.value,
                     category: inpCategoryManual.value || inpCategorySelect.value,
                     country: inpCountryManual.value || inpCountrySelect.value,
                     channel: inpChannelManual.value || inpChannelSelect.value,
