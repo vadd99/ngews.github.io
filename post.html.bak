@@ -80,6 +80,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // KONFIGURASI FIREBASE ANDA
         const firebaseConfig = {
             apiKey: "AIzaSyA8-TN3r2KNL-XEHZ5lF3-rkVyj2qQe9so",
             authDomain: "ngews-web.firebaseapp.com",
@@ -94,65 +95,35 @@
         
         let channelMap = {};
 
+        // 1. Load data lama agar Admin Panel cerdas
         async function loadAdminData() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "videos"));
-                const cats = new Set(), counts = new Set(), tags = new Set();
-                
-                querySnapshot.forEach(doc => {
-                    const d = doc.data();
-                    if(d.category) cats.add(d.category);
-                    if(d.country) counts.add(d.country);
-                    if(d.channel) { 
-                        channelMap[d.channel] = d.avatar; 
-                        // Tambah ke select channel jika belum ada
-                        const sel = document.getElementById('inpChannel');
-                        if(![...sel.options].some(o => o.value === d.channel)) {
-                            const opt = document.createElement('option');
-                            opt.value = d.channel; opt.textContent = d.channel;
-                            sel.appendChild(opt);
-                        }
-                    }
-                    if(d.tags && Array.isArray(d.tags)) d.tags.forEach(t => tags.add(t));
-                });
-                
-                // Isi Datalist Kategori
-                const catList = document.getElementById('categoryList');
-                catList.innerHTML = ""; // Bersihkan dulu
-                cats.forEach(c => catList.innerHTML += `<option value="${c}">`);
-
-                // Isi Select Negara
-                const countrySel = document.getElementById('inpCountry');
-                countrySel.innerHTML = '<option value="">-- Pilih atau ketik --</option>';
-                counts.forEach(c => countrySel.innerHTML += `<option value="${c}">${c}</option>`);
-
-                // Isi Tags Checklist
-                const tagCont = document.getElementById('tagsContainer');
-                tagCont.innerHTML = "";
-                tags.forEach(t => tagCont.innerHTML += `<label><input type="checkbox" value="${t}"> ${t}</label>`);
-
-            } catch (err) {
-                console.error("Gagal memuat data admin:", err);
-            }
+            const querySnapshot = await getDocs(collection(db, "videos"));
+            const cats = new Set(), counts = new Set(), tags = new Set();
+            querySnapshot.forEach(doc => {
+                const d = doc.data();
+                if(d.category) cats.add(d.category);
+                if(d.country) counts.add(d.country);
+                if(d.channel) { channelMap[d.channel] = d.avatar; addChannelOpt(d.channel); }
+                if(d.tags) d.tags.forEach(t => tags.add(t));
+            });
+            
+            cats.forEach(c => document.getElementById('categoryList').innerHTML += `<option value="${c}">`);
+            counts.forEach(c => document.getElementById('inpCountry').innerHTML += `<option value="${c}">${c}</option>`);
+            tags.forEach(t => document.getElementById('tagsContainer').innerHTML += `<label><input type="checkbox" value="${t}"> ${t}</label>`);
         }
 
-        // Jalankan saat halaman siap
-        window.addEventListener('DOMContentLoaded', loadAdminData);
+        function addChannelOpt(name) {
+            const sel = document.getElementById('inpChannel');
+            if(![...sel.options].some(o => o.value === name)) sel.innerHTML += `<option value="${name}">${name}</option>`;
+        }
 
-        // Logika Channel Baru/Pilih
         document.getElementById('inpChannel').addEventListener('change', (e) => {
             const av = document.getElementById('inpAvatar');
-            const val = e.target.value;
-            if(val === 'new') {
-                av.style.display = 'block'; av.value = "";
-            } else if (val !== "") {
-                av.style.display = 'block'; av.value = channelMap[val] || "";
-            } else {
-                av.style.display = 'none';
-            }
+            av.style.display = (e.target.value === 'new' || e.target.value !== "") ? 'block' : 'none';
+            av.value = channelMap[e.target.value] || "";
         });
 
-        // Submit form
+        // 2. Kirim ke Firebase dengan Efek Loading
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
@@ -182,7 +153,8 @@
             } catch (err) { alert("Gagal: " + err.message); } 
             finally { btn.disabled = false; btn.textContent = "Publikasikan Video"; }
         });
-    </script>
 
+        loadAdminData();
+    </script>
 </body>
 </html>
