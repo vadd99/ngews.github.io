@@ -1070,13 +1070,16 @@
             return tanggalUpload.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
         }
 
-        // GENERATE MENU KATEGORI DI SIDEBAR SECARA OTOMATIS
+        // GENERATE MENU KATEGORI DI SIDEBAR SECARA OTOMATIS (DENGAN PROTEKSI DATA NULL/EMPTY)
         function buatSidebarKategoriDinamis() {
             const sidebarSubmenu = document.getElementById('sidebarSubmenu');
             const setKategori = new Set();
 
             mockVideos.forEach(video => {
-                if (video.category) setKategori.add(video.category.trim());
+                // Memberikan proteksi penuh agar value string yang kosong/null tidak merusak runtime JavaScript
+                if (video.category && video.category.toString().trim() !== "") {
+                    setKategori.add(video.category.toString().trim());
+                }
             });
 
             sidebarSubmenu.innerHTML = '';
@@ -1107,7 +1110,7 @@
             });
         }
 
-        // Event Listener Tombol Navigasi Menu Utama
+        // Event Listener Tombol Navigasi Menu Utama Terhubung Secara Modular Aman
         document.getElementById('btnBeranda').addEventListener('click', (e) => {
             e.preventDefault();
             document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
@@ -1161,8 +1164,10 @@
             mockVideos.forEach(video => {
                 if (video.tags && Array.isArray(video.tags)) {
                     video.tags.forEach(tag => {
-                        const tBersih = tag.trim();
-                        if (tBersih) { hitungTag[tBersih] = (hitungTag[tBersih] || 0) + 1; }
+                        if (tag) {
+                            const tBersih = tag.toString().trim();
+                            if (tBersih) { hitungTag[tBersih] = (hitungTag[tBersih] || 0) + 1; }
+                        }
                     });
                 }
             });
@@ -1191,7 +1196,9 @@
 
             const setNegara = new Set(['Global']);
             mockVideos.forEach(video => {
-                if (video.country) setNegara.add(video.country.trim());
+                if (video.country && video.country.toString().trim() !== "") {
+                    setNegara.add(video.country.toString().trim());
+                }
             });
 
             countryContainer.innerHTML = '';
@@ -1355,12 +1362,19 @@
             const keyword = expandingInput.value.toLowerCase();
             
             let hasilFilter = mockVideos.filter(video => {
-                const cocokKeyword = video.title.toLowerCase().includes(keyword) || video.channel.toLowerCase().includes(keyword);
-                const cocokKategori = (kategoriAktif === 'Semua' || (video.category && video.category.trim() === kategoriAktif));
-                const cocokTag = (tagAktif === 'Semua' || (video.tags && Array.isArray(video.tags) && video.tags.map(t => t.trim()).includes(tagAktif)));
+                const vTitle = video.title ? video.title.toLowerCase() : "";
+                const vChannel = video.channel ? video.channel.toLowerCase() : "";
+                const cocokKeyword = vTitle.includes(keyword) || vChannel.includes(keyword);
+                
+                const cocokKategori = (kategoriAktif === 'Semua' || 
+                    (video.category && video.category.toString().trim() === kategoriAktif));
+                    
+                const cocokTag = (tagAktif === 'Semua' || 
+                    (video.tags && Array.isArray(video.tags) && video.tags.map(t => t ? t.toString().trim() : "").includes(tagAktif)));
                 
                 const negaraMurni = negaraAktif.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD00-\uDFFF]/g, '').trim();
-                const cocokNegara = (negaraAktif === 'Global' || (video.country && video.country.trim() === negaraMurni));
+                const cocokNegara = (negaraAktif === 'Global' || 
+                    (video.country && video.country.toString().trim() === negaraMurni));
                 
                 return cocokKeyword && cocokKategori && cocokTag && cocokNegara;
             });
