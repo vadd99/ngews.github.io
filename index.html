@@ -960,7 +960,34 @@
         </main>
     </div>
 
-    <script>
+    <!-- IMPOR SDK FIREBASE SECARA MODULAR -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // ==========================================
+        // LAKUKAN PASTE KONFIGURASI FIREBASE KAMU DI SINI
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8-TN3r2KNL-XEHZ5lF3-rkVyj2qQe9so",
+            authDomain: "ngews-web.firebaseapp.com",
+            projectId: "ngews-web",
+            storageBucket: "ngews-web.firebasestorage.app",
+            messagingSenderId: "1952425136",
+            appId: "1:1952425136:web:3267816a6b05772d688775"
+        };
+
+        // Inisialisasi Firebase & Firestore
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // STATE DATA UTAMA (Sekarang dikendalikan global)
+        let mockVideos = [];
+        let kategoriAktif = 'Semua';
+        let tagAktif = 'Semua';
+        let negaraAktif = 'Global';
+        let isMostLikedActive = false;
+
         // EXPANDABLE SEARCH LOGIC
         const searchToggleBtn = document.getElementById('searchToggleBtn');
         const expandableSearch = document.getElementById('expandableSearch');
@@ -989,36 +1016,68 @@
             dropdownToggleBtn.classList.toggle('active');
         });
 
-        // STATE DATA UTAMA
-        let mockVideos = [];
-        let kategoriAktif = 'Semua';
-        let tagAktif = 'Semua';
-        let negaraAktif = 'Global';
-        let isMostLikedActive = false;
-
-        // FUNGSI UTAMA MEMUAT DATA DATA JSON
+        // FUNGSI UNTUK MENGAMBIL DATA DARI FIREBASE FIRESTORE
         async function ambilDataPostingan() {
             try {
-                const response = await fetch('./postingan.json');
-                mockVideos = await response.json();
+                // Tarik koleksi dokumen bernama "videos" dari Cloud
+                const querySnapshot = await getDocs(collection(db, "videos"));
+                mockVideos = [];
+                
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    mockVideos.push({
+                        id: doc.id, // Gunakan ID dokumen Firestore (misal: "1" atau ID acak)
+                        title: data.title || "Tanpa Judul",
+                        videoUrl: data.videoUrl || "",
+                        thumbnail: data.thumbnail || "",
+                        category: data.category || "",
+                        country: data.country || "",
+                        channel: data.channel || "Unknown",
+                        avatar: data.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde",
+                        views: data.views || 0,
+                        likes: data.likes || 0,
+                        uploadDate: data.uploadDate ? data.uploadDate.toDate() : new Date(), // Konversi timestamp ke Date JS
+                        duration: data.duration || "00:00",
+                        tags: data.tags || []
+                    });
+                });
                 
                 renderVideos(mockVideos);
                 inisialisasiSlider(); 
                 buatSidebarKategoriDinamis(); 
                 buatTagsDinamis();            
             } catch (error) {
-                console.error("Gagal memuat data postingan:", error);
+                console.error("Gagal memuat data dari Firebase:", error);
                 document.getElementById('videoGrid').innerHTML = `
                     <div style="grid-column: span 2; text-align: center; padding: 40px; color: #ff6b6b">
                         <p style="font-size: 1.2rem; margin-bottom: 8px;">Gagal memuat postingan</p>
-                        <p style="font-size: 0.9rem;">Pastikan struktur postingan.json sudah benar.</p>
+                        <p style="font-size: 0.9rem;">Periksa koneksi internet atau konfigurasinya.</p>
                     </div>
                 `;
             }
         }
         ambilDataPostingan();
 
-        // 1. GENERATE MENU KATEGORI DI SIDEBAR SECARA OTOMATIS (DIRAPIKAN)
+        // FUNGSI OTOMATISASI FORMAT TANGGAL UPLOAD ("X jam yang lalu")
+        function formatWaktuUpload(tanggalUpload) {
+            const sekarang = new Date();
+            const selisihDetik = Math.floor((sekarang - tanggalUpload) / 1000);
+
+            if (selisihDetik < 60) return 'Baru saja';
+            
+            const selisihMenit = Math.floor(selisihDetik / 60);
+            if (selisihMenit < 60) return `${selisihMenit} menit yang lalu`;
+            
+            const selisihJam = Math.floor(selisihMenit / 60);
+            if (selisihJam < 24) return `${selisihJam} jam yang lalu`;
+            
+            const selisihHari = Math.floor(selisihJam / 24);
+            if (selisihHari < 7) return `${selisihHari} hari yang lalu`;
+            
+            return tanggalUpload.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        // GENERATE MENU KATEGORI DI SIDEBAR SECARA OTOMATIS
         function buatSidebarKategoriDinamis() {
             const sidebarSubmenu = document.getElementById('sidebarSubmenu');
             const setKategori = new Set();
@@ -1038,7 +1097,6 @@
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // Kelola kelas aktif visual
                     document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
                     document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
                     li.classList.add('active');
@@ -1057,7 +1115,7 @@
         }
 
         // Reset Kembali Halaman ke Kondisi Awal Saat Klik Menu Beranda
-        function pilihBerandaAwal(e) {
+        window.pilihBerandaAwal = function(e) {
             e.preventDefault();
             document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
@@ -1076,7 +1134,7 @@
         }
 
         // Fungsi filter khusus untuk menu "Most Liked"
-        function filterMostLiked(e) {
+        window.filterMostLiked = function(e) {
             e.preventDefault();
             document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
@@ -1091,7 +1149,7 @@
             }
         }
 
-        // 2. GENERATE TOP 20 TAGS TERPOPULER & NEGARA DI BAGIAN BAWAH
+        // GENERATE TOP 20 TAGS TERPOPULER & NEGARA DI BAGIAN BAWAH
         function buatTagsDinamis() {
             const categoryContainer = document.getElementById('categoryTagsContainer');
             const countryContainer = document.getElementById('countryTagsContainer');
@@ -1232,7 +1290,7 @@
             autoPlaySlider = setInterval(nextSlide, 5000);
         });
 
-        // RENDER VIDEO ITEMS TO GRID
+        // RENDER VIDEO ITEMS TO GRID (Diperbarui dengan Format Waktu Upload)
         const videoGrid = document.getElementById('videoGrid');
         function renderVideos(videos) {
             videoGrid.innerHTML = '';
@@ -1252,7 +1310,7 @@
                 videoCard.innerHTML = `
                     <div class="thumbnail-container">
                         <img src="${video.thumbnail}" alt="Thumbnail dari ${video.title}" class="video-thumbnail">
-                        <div class="duration-tag">${video.duration || '00:00'}</div>
+                        <div class="duration-tag">${video.duration}</div>
                         <div class="play-overlay">
                             <div class="play-icon-circle">
                                 <svg width="24" height="24" fill="#0a0712" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
@@ -1271,9 +1329,9 @@
                                     </span>
                                 </p>
                                 <div class="stats-row">
-                                    <span>${video.views || 0} ditonton</span>
+                                    <span>${parseInt(video.views).toLocaleString('id-ID')} ditonton</span>
                                     <div class="dot-separator"></div>
-                                    <span>${video.time || 'Baru saja'}</span>
+                                    <span>${formatWaktuUpload(video.uploadDate)}</span>
                                 </div>
                             </div>
                         </div>
@@ -1306,11 +1364,10 @@
             }
         });
 
-        // 3. FILTER COMBINATION SYSTEM (INCLUDING MOST LIKED SORTING)
+        // FILTER COMBINATION SYSTEM (INCLUDING MOST LIKED SORTING)
         function jalankanFilterSistem() {
             const keyword = expandingInput.value.toLowerCase();
             
-            // Proses Filter Awal
             let hasilFilter = mockVideos.filter(video => {
                 const cocokKeyword = video.title.toLowerCase().includes(keyword) || video.channel.toLowerCase().includes(keyword);
                 const cocokKategori = (kategoriAktif === 'Semua' || (video.category && video.category.trim() === kategoriAktif));
@@ -1322,12 +1379,11 @@
                 return cocokKeyword && cocokKategori && cocokTag && cocokNegara;
             });
 
-            // Jika Menu "Most Liked" sedang aktif, urutkan data berdasarkan view/like terbesar secara deskriptif
             if (isMostLikedActive) {
                 hasilFilter.sort((a, b) => {
-                    const viewA = parseInt(a.views) || 0;
-                    const viewB = parseInt(b.views) || 0;
-                    return viewB - viewA;
+                    const likeA = parseInt(a.likes) || 0;
+                    const likeB = parseInt(b.likes) || 0;
+                    return likeB - likeA; // Urutkan dari jumlah like terbanyak
                 });
             }
             
@@ -1336,5 +1392,6 @@
 
         expandingInput.addEventListener('input', jalankanFilterSistem);
     </script>
+
 </body>
 </html>
