@@ -174,7 +174,7 @@
             min-height: 100vh;
         }
 
-        /* SIDEBAR */
+        /* SIDEBAR (FIXED FLEXBOX & LAYOUT) */
         aside {
             width: var(--sidebar-width);
             background-color: var(--bg-surface);
@@ -214,7 +214,6 @@
         .sidebar-item a, .sidebar-dropdown-toggle {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             padding: 12px 16px;
             color: var(--text-muted);
             text-decoration: none;
@@ -227,12 +226,25 @@
             background: none;
             border: none;
             text-align: left;
+            box-sizing: border-box;
+        }
+
+        /* Menjaga agar susunan ikon dan teks sejajar rapi */
+        .sidebar-dropdown-toggle {
+            justify-content: space-between;
+        }
+
+        .dropdown-label-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
         .sidebar-item-inner {
             display: flex;
             align-items: center;
             gap: 16px;
+            width: 100%;
         }
 
         .sidebar-item.active a, .sidebar-item a:hover, .sidebar-dropdown-toggle:hover {
@@ -251,6 +263,9 @@
         .dropdown-arrow {
             font-size: 0.75rem;
             transition: transform 0.3s ease;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
         }
 
         .sidebar-dropdown-toggle.active .dropdown-arrow {
@@ -260,7 +275,7 @@
 
         .sidebar-submenu-list {
             list-style: none;
-            padding-left: 36px;
+            padding-left: 50px; /* Disesuaikan agar menjorok pas di bawah teks menu utama */
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -271,24 +286,25 @@
         }
 
         .sidebar-dropdown-toggle.active + .sidebar-submenu-list {
-            max-height: 400px; /* Ditambah batas tinggi penampung agar muat kategori dinamis */
+            max-height: 400px;
             margin-top: 4px;
             margin-bottom: 8px;
         }
 
         .submenu-item a {
             display: block;
-            padding: 8px 16px;
+            padding: 10px 0;
             color: var(--text-muted);
             text-decoration: none;
             font-size: 0.9rem;
-            border-radius: 8px;
+            border-radius: 0;
             transition: var(--transition);
+            background: none;
         }
 
         .submenu-item.active a, .submenu-item a:hover {
             color: var(--accent);
-            background-color: rgba(180, 147, 255, 0.05);
+            background: none;
         }
 
         /* MAIN CONTENT AREA */
@@ -834,7 +850,16 @@
                         </div>
                     </a>
                 </li>
-                <!-- DROPDOWN KATEGORI OTOMATIS (DATA DARI JSON) -->
+                <!-- MENU BARU: MOST LIKED (DI BAWAH POPULER) -->
+                <li class="sidebar-item" id="menuMostLiked">
+                    <a href="#" onclick="filterMostLiked(event)">
+                        <div class="sidebar-item-inner">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"></path></svg>
+                            Most Liked
+                        </div>
+                    </a>
+                </li>
+                <!-- DROPDOWN KATEGORI (DIRAPIKAN) -->
                 <li class="sidebar-item-dropdown">
                     <button class="sidebar-dropdown-toggle" id="dropdownToggleBtn">
                         <div class="dropdown-label-wrapper">
@@ -969,6 +994,7 @@
         let kategoriAktif = 'Semua';
         let tagAktif = 'Semua';
         let negaraAktif = 'Global';
+        let isMostLikedActive = false;
 
         // FUNGSI UTAMA MEMUAT DATA DATA JSON
         async function ambilDataPostingan() {
@@ -978,8 +1004,8 @@
                 
                 renderVideos(mockVideos);
                 inisialisasiSlider(); 
-                buatSidebarKategoriDinamis(); // Bangun kategori di sidebar otomatis
-                buatTagsDinamis();            // Bangun 20 tag populer + negara di bawah otomatis
+                buatSidebarKategoriDinamis(); 
+                buatTagsDinamis();            
             } catch (error) {
                 console.error("Gagal memuat data postingan:", error);
                 document.getElementById('videoGrid').innerHTML = `
@@ -992,12 +1018,11 @@
         }
         ambilDataPostingan();
 
-        // 1. GENERATE MENU KATEGORI DI SIDEBAR SECARA OTOMATIS
+        // 1. GENERATE MENU KATEGORI DI SIDEBAR SECARA OTOMATIS (DIRAPIKAN)
         function buatSidebarKategoriDinamis() {
             const sidebarSubmenu = document.getElementById('sidebarSubmenu');
             const setKategori = new Set();
 
-            // Ambil semua kategori unik dari json
             mockVideos.forEach(video => {
                 if (video.category) setKategori.add(video.category.trim());
             });
@@ -1013,11 +1038,12 @@
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // Kelola kelas aktif visual di sub-menu sidebar
+                    // Kelola kelas aktif visual
                     document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
-                    document.getElementById('menuBeranda').classList.remove('active');
+                    document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
                     li.classList.add('active');
                     
+                    isMostLikedActive = false;
                     kategoriAktif = kategori;
                     document.getElementById('gridSectionTitle').textContent = `Kategori: ${kategori}`;
                     jalankanFilterSistem();
@@ -1034,18 +1060,35 @@
         function pilihBerandaAwal(e) {
             e.preventDefault();
             document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
             document.getElementById('menuBeranda').classList.add('active');
             
             kategoriAktif = 'Semua';
             tagAktif = 'Semua';
             negaraAktif = 'Global';
+            isMostLikedActive = false;
             expandingInput.value = '';
             
             document.getElementById('gridSectionTitle').textContent = `Video & Berita Terbaru`;
             
-            // Atur ulang penanda aktif tombol bagian bawah ke posisi default
             buatTagsDinamis(); 
             jalankanFilterSistem();
+        }
+
+        // Fungsi filter khusus untuk menu "Most Liked"
+        function filterMostLiked(e) {
+            e.preventDefault();
+            document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
+            document.getElementById('menuMostLiked').classList.add('active');
+
+            isMostLikedActive = true;
+            document.getElementById('gridSectionTitle').textContent = `Most Liked Videos`;
+            jalankanFilterSistem();
+
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
         }
 
         // 2. GENERATE TOP 20 TAGS TERPOPULER & NEGARA DI BAGIAN BAWAH
@@ -1053,30 +1096,24 @@
             const categoryContainer = document.getElementById('categoryTagsContainer');
             const countryContainer = document.getElementById('countryTagsContainer');
 
-            // --- HITUNG DAN URUTKAN TAG PALING POPULER ---
             const hitungTag = {};
             mockVideos.forEach(video => {
                 if (video.tags && Array.isArray(video.tags)) {
                     video.tags.forEach(tag => {
                         const tBersih = tag.trim();
-                        if (tBersih) {
-                            hitungTag[tBersih] = (hitungTag[tBersih] || 0) + 1;
-                        }
+                        if (tBersih) { hitungTag[tBersih] = (hitungTag[tBersih] || 0) + 1; }
                     });
                 }
             });
 
-            // Ubah objek penghitung menjadi array, urutkan dari terbanyak, potong maksimal 20 item
             const arrayTagPopuler = Object.keys(hitungTag)
                 .map(key => ({ nama: key, jumlah: hitungTag[key] }))
                 .sort((a, b) => b.jumlah - a.jumlah)
                 .slice(0, 20)
                 .map(item => item.nama);
 
-            // Tambahkan opsi default "Semua" di baris paling depan tag pil bawah
             const list20TagFinal = ['Semua', ...arrayTagPopuler];
 
-            // Render 20 Tag Populer Ke Halaman
             categoryContainer.innerHTML = '';
             list20TagFinal.forEach(tag => {
                 const pill = document.createElement('div');
@@ -1091,7 +1128,6 @@
                 categoryContainer.appendChild(pill);
             });
 
-            // --- RENDER SEKTOR NEGARA (TETAP) ---
             const setNegara = new Set(['Global']);
             mockVideos.forEach(video => {
                 if (video.country) setNegara.add(video.country.trim());
@@ -1270,26 +1306,30 @@
             }
         });
 
-        // 3. LIVE SEARCH, KATEGORI SIDEBAR & TOP 20 TAG COMBINATION FILTER SYSTEM
+        // 3. FILTER COMBINATION SYSTEM (INCLUDING MOST LIKED SORTING)
         function jalankanFilterSistem() {
             const keyword = expandingInput.value.toLowerCase();
             
-            const hasilFilter = mockVideos.filter(video => {
-                // A. Cocok Keyword (Judul & Nama Channel)
+            // Proses Filter Awal
+            let hasilFilter = mockVideos.filter(video => {
                 const cocokKeyword = video.title.toLowerCase().includes(keyword) || video.channel.toLowerCase().includes(keyword);
-                
-                // B. Cocok Kategori Utama (Dari Navigasi Sidebar)
                 const cocokKategori = (kategoriAktif === 'Semua' || (video.category && video.category.trim() === kategoriAktif));
-                
-                // C. Cocok Tag Spesifik (Dari 20 Pil Tag Populer Halaman Bawah)
                 const cocokTag = (tagAktif === 'Semua' || (video.tags && Array.isArray(video.tags) && video.tags.map(t => t.trim()).includes(tagAktif)));
                 
-                // D. Cocok Negara Asal Kreator (Dari Pilihan Negara Halaman Bawah)
                 const negaraMurni = negaraAktif.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD00-\uDFFF]/g, '').trim();
                 const cocokNegara = (negaraAktif === 'Global' || (video.country && video.country.trim() === negaraMurni));
                 
                 return cocokKeyword && cocokKategori && cocokTag && cocokNegara;
             });
+
+            // Jika Menu "Most Liked" sedang aktif, urutkan data berdasarkan view/like terbesar secara deskriptif
+            if (isMostLikedActive) {
+                hasilFilter.sort((a, b) => {
+                    const viewA = parseInt(a.views) || 0;
+                    const viewB = parseInt(b.views) || 0;
+                    return viewB - viewA;
+                });
+            }
             
             renderVideos(hasilFilter);
         }
