@@ -10,6 +10,7 @@
     "views": "45RB x",
     "time": "2 hari yang lalu",
     "category": "Ulasan Tech",
+    "tags": ["pemandangan", "alam"],
     "country": "Indonesia"
   },
   {
@@ -23,6 +24,7 @@
     "views": "120RB x",
     "time": "1 minggu yang lalu",
     "category": "Vlog Perjalanan",
+    "tags":["alam", "teknologi", "traveling"],
     "country": "Jepang"
   },
   {
@@ -36,6 +38,7 @@
     "views": "12RB x",
     "time": "3 hari yang lalu",
     "category": "Tutorial",
+    "tags":["zaizay", "beautiful"],
     "country": "Global"
   },
   {
@@ -49,6 +52,7 @@
     "views": "2 x",
     "time": "2 jam lalu",
     "category": "Indonesia",
+    "tags":["zaizay", "beautiful girl"],
     "country": "Indonesia"
   }
 ]

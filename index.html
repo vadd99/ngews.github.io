@@ -214,7 +214,7 @@
         .sidebar-item a, .sidebar-dropdown-toggle {
             display: flex;
             align-items: center;
-            gap: 16px;
+            justify-content: space-between;
             padding: 12px 16px;
             color: var(--text-muted);
             text-decoration: none;
@@ -227,6 +227,12 @@
             background: none;
             border: none;
             text-align: left;
+        }
+
+        .sidebar-item-inner {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
         .sidebar-item.active a, .sidebar-item a:hover, .sidebar-dropdown-toggle:hover {
@@ -242,16 +248,6 @@
         }
 
         /* SUB-MENU DROPDOWN STYLE */
-        .sidebar-dropdown-toggle {
-            justify-content: space-between;
-        }
-
-        .dropdown-label-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
         .dropdown-arrow {
             font-size: 0.75rem;
             transition: transform 0.3s ease;
@@ -275,7 +271,7 @@
         }
 
         .sidebar-dropdown-toggle.active + .sidebar-submenu-list {
-            max-height: 200px; /* Lebar maksimal secukupnya untuk item submenu */
+            max-height: 400px; /* Ditambah batas tinggi penampung agar muat kategori dinamis */
             margin-top: 4px;
             margin-bottom: 8px;
         }
@@ -290,7 +286,7 @@
             transition: var(--transition);
         }
 
-        .submenu-item a:hover {
+        .submenu-item.active a, .submenu-item a:hover {
             color: var(--accent);
             background-color: rgba(180, 147, 255, 0.05);
         }
@@ -822,19 +818,23 @@
         <aside id="sidebar">
             <p class="sidebar-title">Menu Utama</p>
             <ul class="sidebar-menu">
-                <li class="sidebar-item active">
-                    <a href="#">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                        Beranda
+                <li class="sidebar-item active" id="menuBeranda">
+                    <a href="#" onclick="pilihBerandaAwal(event)">
+                        <div class="sidebar-item-inner">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                            Beranda
+                        </div>
                     </a>
                 </li>
                 <li class="sidebar-item">
                     <a href="#">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        Populer
+                        <div class="sidebar-item-inner">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            Populer
+                        </div>
                     </a>
                 </li>
-                <!-- DROPDOWN KATEGORI DI BAWAH POPULER -->
+                <!-- DROPDOWN KATEGORI OTOMATIS (DATA DARI JSON) -->
                 <li class="sidebar-item-dropdown">
                     <button class="sidebar-dropdown-toggle" id="dropdownToggleBtn">
                         <div class="dropdown-label-wrapper">
@@ -844,10 +844,7 @@
                         <span class="dropdown-arrow">❯</span>
                     </button>
                     <ul class="sidebar-submenu-list" id="sidebarSubmenu">
-                        <li class="submenu-item"><a href="#" onclick="pilihKategoriSidebar('🎥 Sinematik')">🎥 Sinematik</a></li>
-                        <li class="submenu-item"><a href="#" onclick="pilihKategoriSidebar('💻 Teknologi')">💻 Teknologi</a></li>
-                        <li class="submenu-item"><a href="#" onclick="pilihKategoriSidebar('🎵 Musik')">🎵 Musik</a></li>
-                        <li class="submenu-item"><a href="#" onclick="pilihKategoriSidebar('🎮 Gaming')">🎮 Gaming</a></li>
+                        <!-- Disuntikkan Secara Otomatis oleh JS -->
                     </ul>
                 </li>
             </ul>
@@ -856,20 +853,26 @@
             <ul class="sidebar-menu">
                 <li class="sidebar-item">
                     <a href="#">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.158.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                        Koleksi Saya
+                        <div class="sidebar-item-inner">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.158.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            Koleksi Saya
+                        </div>
                     </a>
                 </li>
                 <li class="sidebar-item">
                     <a href="#">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Riwayat
+                        <div class="sidebar-item-inner">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Riwayat
+                        </div>
                     </a>
                 </li>
                 <li class="sidebar-item">
                     <a href="#">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                        Video Disukai
+                        <div class="sidebar-item-inner">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                            Video Disukai
+                        </div>
                     </a>
                 </li>
             </ul>
@@ -891,7 +894,7 @@
 
             <!-- VIDEO GRID SECTION -->
             <section class="section-header">
-                <h2 class="section-title">Video & Berita Terbaru</h2>
+                <h2 class="section-title" id="gridSectionTitle">Video & Berita Terbaru</h2>
             </section>
 
             <!-- Video Grid -->
@@ -899,11 +902,11 @@
 
             <!-- BOTTOM TAGS SECTION -->
             <section class="bottom-tags-section">
-                <!-- Jenis Tag 1: Kategori Video (Dinamis) -->
+                <!-- Jenis Tag 1: Top 20 Tags Terpopuler (Dinamis) -->
                 <div class="tags-group">
                     <h3 class="tags-group-title">
                         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 7h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        Temukan Berdasarkan <span>Kategori Video</span>
+                        Top Topik <span>Tag Populer</span>
                     </h3>
                     <div class="tags-container" id="categoryTagsContainer"></div>
                 </div>
@@ -944,14 +947,10 @@
                 expandableSearch.classList.add('active');
                 expandingInput.focus();
             } else {
-                if (expandingInput.value === '') {
-                    expandableSearch.classList.remove('active');
-                }
+                if (expandingInput.value === '') { expandableSearch.classList.remove('active'); }
             }
         });
-
         expandingInput.addEventListener('click', (e) => { e.stopPropagation(); });
-
         document.addEventListener('click', (e) => {
             if (expandableSearch.classList.contains('active') && expandingInput.value === '') {
                 expandableSearch.classList.remove('active');
@@ -968,9 +967,10 @@
         // STATE DATA UTAMA
         let mockVideos = [];
         let kategoriAktif = 'Semua';
+        let tagAktif = 'Semua';
         let negaraAktif = 'Global';
 
-        // FUNGSI UNTUK MENGAMBIL DATA DARI POSTINGAN.JSON
+        // FUNGSI UTAMA MEMUAT DATA DATA JSON
         async function ambilDataPostingan() {
             try {
                 const response = await fetch('./postingan.json');
@@ -978,47 +978,125 @@
                 
                 renderVideos(mockVideos);
                 inisialisasiSlider(); 
-                buatTagsDinamis(); 
+                buatSidebarKategoriDinamis(); // Bangun kategori di sidebar otomatis
+                buatTagsDinamis();            // Bangun 20 tag populer + negara di bawah otomatis
             } catch (error) {
                 console.error("Gagal memuat data postingan:", error);
                 document.getElementById('videoGrid').innerHTML = `
                     <div style="grid-column: span 2; text-align: center; padding: 40px; color: #ff6b6b">
                         <p style="font-size: 1.2rem; margin-bottom: 8px;">Gagal memuat postingan</p>
-                        <p style="font-size: 0.9rem;">Pastikan file postingan.json sudah di-upload ke repo.</p>
+                        <p style="font-size: 0.9rem;">Pastikan struktur postingan.json sudah benar.</p>
                     </div>
                 `;
             }
         }
-
         ambilDataPostingan();
 
-        // GENERATE TAGS KATEGORI & NEGARA SECARA DINAMIS
+        // 1. GENERATE MENU KATEGORI DI SIDEBAR SECARA OTOMATIS
+        function buatSidebarKategoriDinamis() {
+            const sidebarSubmenu = document.getElementById('sidebarSubmenu');
+            const setKategori = new Set();
+
+            // Ambil semua kategori unik dari json
+            mockVideos.forEach(video => {
+                if (video.category) setKategori.add(video.category.trim());
+            });
+
+            sidebarSubmenu.innerHTML = '';
+            setKategori.forEach(kategori => {
+                const li = document.createElement('li');
+                li.className = 'submenu-item';
+                li.id = `sidebar-cat-${kategori.replace(/\s+/g, '')}`;
+                li.innerHTML = `<a href="#">${kategori}</a>`;
+                
+                li.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Kelola kelas aktif visual di sub-menu sidebar
+                    document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
+                    document.getElementById('menuBeranda').classList.remove('active');
+                    li.classList.add('active');
+                    
+                    kategoriAktif = kategori;
+                    document.getElementById('gridSectionTitle').textContent = `Kategori: ${kategori}`;
+                    jalankanFilterSistem();
+
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('sidebar').classList.remove('active');
+                    }
+                });
+                sidebarSubmenu.appendChild(li);
+            });
+        }
+
+        // Reset Kembali Halaman ke Kondisi Awal Saat Klik Menu Beranda
+        function pilihBerandaAwal(e) {
+            e.preventDefault();
+            document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
+            document.getElementById('menuBeranda').classList.add('active');
+            
+            kategoriAktif = 'Semua';
+            tagAktif = 'Semua';
+            negaraAktif = 'Global';
+            expandingInput.value = '';
+            
+            document.getElementById('gridSectionTitle').textContent = `Video & Berita Terbaru`;
+            
+            // Atur ulang penanda aktif tombol bagian bawah ke posisi default
+            buatTagsDinamis(); 
+            jalankanFilterSistem();
+        }
+
+        // 2. GENERATE TOP 20 TAGS TERPOPULER & NEGARA DI BAGIAN BAWAH
         function buatTagsDinamis() {
             const categoryContainer = document.getElementById('categoryTagsContainer');
             const countryContainer = document.getElementById('countryTagsContainer');
 
-            const setKategori = new Set(['Semua']);
-            const setNegara = new Set(['Global']);
-
+            // --- HITUNG DAN URUTKAN TAG PALING POPULER ---
+            const hitungTag = {};
             mockVideos.forEach(video => {
-                if (video.category) setKategori.add(video.category.trim());
-                if (video.country) setNegara.add(video.country.trim());
+                if (video.tags && Array.isArray(video.tags)) {
+                    video.tags.forEach(tag => {
+                        const tBersih = tag.trim();
+                        if (tBersih) {
+                            hitungTag[tBersih] = (hitungTag[tBersih] || 0) + 1;
+                        }
+                    });
+                }
             });
 
-            // Render Tag Kategori
+            // Ubah objek penghitung menjadi array, urutkan dari terbanyak, potong maksimal 20 item
+            const arrayTagPopuler = Object.keys(hitungTag)
+                .map(key => ({ nama: key, jumlah: hitungTag[key] }))
+                .sort((a, b) => b.jumlah - a.jumlah)
+                .slice(0, 20)
+                .map(item => item.nama);
+
+            // Tambahkan opsi default "Semua" di baris paling depan tag pil bawah
+            const list20TagFinal = ['Semua', ...arrayTagPopuler];
+
+            // Render 20 Tag Populer Ke Halaman
             categoryContainer.innerHTML = '';
-            setKategori.forEach(kategori => {
+            list20TagFinal.forEach(tag => {
                 const pill = document.createElement('div');
-                pill.className = `tag-pill ${kategori === kategoriAktif ? 'active' : ''}`;
-                pill.textContent = kategori;
-                pill.id = `tag-cat-${kategori.replace(/\s+/g, '')}`;
+                pill.className = `tag-pill ${tag === tagAktif ? 'active' : ''}`;
+                pill.textContent = tag;
                 pill.addEventListener('click', () => {
-                    sinkronisasiPillKategori(kategori);
+                    document.querySelectorAll('#categoryTagsContainer .tag-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    tagAktif = tag;
+                    jalankanFilterSistem();
                 });
                 categoryContainer.appendChild(pill);
             });
 
-            // Render Tag Negara
+            // --- RENDER SEKTOR NEGARA (TETAP) ---
+            const setNegara = new Set(['Global']);
+            mockVideos.forEach(video => {
+                if (video.country) setNegara.add(video.country.trim());
+            });
+
             countryContainer.innerHTML = '';
             setNegara.forEach(negara => {
                 const pill = document.createElement('div');
@@ -1032,34 +1110,6 @@
                 });
                 countryContainer.appendChild(pill);
             });
-        }
-
-        // Fungsi pembantu untuk sinkronisasi pilihan dari klik Sidebar atau Pill Kategori bawah
-        function sinkronisasiPillKategori(namaKategori) {
-            document.querySelectorAll('#categoryTagsContainer .tag-pill').forEach(p => p.classList.remove('active'));
-            kategoriAktif = namaKategori;
-            
-            // Cari objek pill di bagian bawah dan aktifkan jika ditemukan
-            const targetPill = document.getElementById(`tag-cat-${namaKategori.replace(/\s+/g, '')}`);
-            if (targetPill) targetPill.classList.add('active');
-            
-            jalankanFilterSistem();
-        }
-
-        // Aksi klik sub-menu di dalam sidebar
-        function pilihKategoriSidebar(kategoriPilihan) {
-            // Bersihkan emoji jika kategori di JSON tidak menyertakan emoji bawaan
-            const kategoriMurni = kategoriPilihan.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD00-\uDFFF]/g, '').trim();
-            
-            // Cek apakah data json menggunakan emoji atau teks murni
-            const adaCocok = mockVideos.some(v => v.category && v.category.trim() === kategoriPilihan);
-            
-            sinkronisasiPillKategori(adaCocok ? kategoriPilihan : kategoriMurni);
-            
-            // Tutup drawer otomatis jika sedang di HP
-            if (window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('active');
-            }
         }
 
         // HERO SLIDER LOGIC
@@ -1116,19 +1166,16 @@
                 dot.classList.toggle('active', index === currentSlide);
             });
         }
-        
         function nextSlide() {
             if (sliderVideos.length === 0) return;
             currentSlide = (currentSlide + 1) % sliderVideos.length;
             updateSlider();
         }
-        
         function prevSlide() {
             if (sliderVideos.length === 0) return;
             currentSlide = (currentSlide - 1 + sliderVideos.length) % sliderVideos.length;
             updateSlider();
         }
-        
         sliderNext.addEventListener('click', nextSlide);
         sliderPrev.addEventListener('click', prevSlide);
         
@@ -1143,7 +1190,6 @@
             if (touchStartX - touchEndX > threshold) nextSlide();
             if (touchEndX - touchStartX > threshold) prevSlide();
         }
-
         heroSliderContainer.addEventListener('mouseenter', () => clearInterval(autoPlaySlider));
         heroSliderContainer.addEventListener('mouseleave', () => {
             clearInterval(autoPlaySlider);
@@ -1152,14 +1198,13 @@
 
         // RENDER VIDEO ITEMS TO GRID
         const videoGrid = document.getElementById('videoGrid');
-
         function renderVideos(videos) {
             videoGrid.innerHTML = '';
             if(videos.length === 0) {
                 videoGrid.innerHTML = `
                     <div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted)">
                         <p style="font-size: 1.2rem; margin-bottom: 8px;">Tidak ada hasil ditemukan</p>
-                        <p style="font-size: 0.9rem;">Cobalah pilih kategori lain atau ubah pencarian.</p>
+                        <p style="font-size: 0.9rem;">Cobalah ubah filter pencarian atau kategori Anda.</p>
                     </div>
                 `;
                 return;
@@ -1171,7 +1216,7 @@
                 videoCard.innerHTML = `
                     <div class="thumbnail-container">
                         <img src="${video.thumbnail}" alt="Thumbnail dari ${video.title}" class="video-thumbnail">
-                        <div class="duration-tag">${video.duration}</div>
+                        <div class="duration-tag">${video.duration || '00:00'}</div>
                         <div class="play-overlay">
                             <div class="play-icon-circle">
                                 <svg width="24" height="24" fill="#0a0712" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
@@ -1190,9 +1235,9 @@
                                     </span>
                                 </p>
                                 <div class="stats-row">
-                                    <span>${video.views} ditonton</span>
+                                    <span>${video.views || 0} ditonton</span>
                                     <div class="dot-separator"></div>
-                                    <span>${video.time}</span>
+                                    <span>${video.time || 'Baru saja'}</span>
                                 </div>
                             </div>
                         </div>
@@ -1221,28 +1266,29 @@
 
         document.addEventListener('click', (e) => {
             if (!sidebar.contains(e.target) && !menuToggleBtn.contains(e.target)) {
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('active');
-                }
+                if (window.innerWidth <= 768) { sidebar.classList.remove('active'); }
             }
         });
 
-        // LIVE SEARCH & FILTER COMBINATION LOGIC
+        // 3. LIVE SEARCH, KATEGORI SIDEBAR & TOP 20 TAG COMBINATION FILTER SYSTEM
         function jalankanFilterSistem() {
             const keyword = expandingInput.value.toLowerCase();
             
             const hasilFilter = mockVideos.filter(video => {
+                // A. Cocok Keyword (Judul & Nama Channel)
                 const cocokKeyword = video.title.toLowerCase().includes(keyword) || video.channel.toLowerCase().includes(keyword);
                 
-                // Cek kecocokan kategori dengan membersihkan spasi/emoji jika ada ketidakcocokan format data murni
-                const katMurni = kategoriAktif.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD00-\uDFFF]/g, '').trim();
-                const cocokKategori = (kategoriAktif === 'Semua' || 
-                                     (video.category && (video.category.trim() === kategoriAktif || video.category.trim() === katMurni)));
+                // B. Cocok Kategori Utama (Dari Navigasi Sidebar)
+                const cocokKategori = (kategoriAktif === 'Semua' || (video.category && video.category.trim() === kategoriAktif));
                 
+                // C. Cocok Tag Spesifik (Dari 20 Pil Tag Populer Halaman Bawah)
+                const cocokTag = (tagAktif === 'Semua' || (video.tags && Array.isArray(video.tags) && video.tags.map(t => t.trim()).includes(tagAktif)));
+                
+                // D. Cocok Negara Asal Kreator (Dari Pilihan Negara Halaman Bawah)
                 const negaraMurni = negaraAktif.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD00-\uDFFF]/g, '').trim();
                 const cocokNegara = (negaraAktif === 'Global' || (video.country && video.country.trim() === negaraMurni));
                 
-                return cocokKeyword && cocokKategori && cocokNegara;
+                return cocokKeyword && cocokKategori && cocokTag && cocokNegara;
             });
             
             renderVideos(hasilFilter);
