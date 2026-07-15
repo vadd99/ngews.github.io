@@ -8,83 +8,68 @@
     
     <style>
         :root {
-            --bg-base: #0a0712;
-            --bg-surface: #120d24;
-            --accent: #b493ff;
-            --text-main: #f3f1f6;
-            --text-muted: #9e97b2;
-            --border-color: #231b3d;
+            --bg-base: #0a0712; --bg-surface: #120d24; --accent: #b493ff;
+            --text-main: #f3f1f6; --text-muted: #9e97b2; --border-color: #231b3d;
+            --transition: all 0.3s ease;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg-base); color: var(--text-main); padding-bottom: 60px; }
-
+        
         .admin-container { max-width: 800px; margin: 40px auto; padding: 0 24px; }
         .form-card { background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
-        .form-group.full-width { grid-column: span 2; }
         
-        input, select { background-color: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 8px; width: 100%; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        input, select { background-color: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 10px; }
         
-        .alert-box { padding: 16px; border-radius: 10px; margin-bottom: 20px; display: none; text-align: center; font-weight: 600; }
-        .alert-success { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #10b981; }
-        .alert-error { background: rgba(255, 107, 107, 0.2); border: 1px solid #ff6b6b; color: #ff6b6b; }
+        .tags-checklist { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; background: var(--bg-base); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .tags-checklist label { cursor: pointer; font-size: 0.85rem; }
         
-        .btn-submit { background: var(--accent); color: #0a0712; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 20px; }
-        .btn-toggle { background: none; border: none; color: var(--accent); cursor: pointer; text-align: left; font-size: 0.8rem; }
+        .btn-submit { background-color: var(--accent); color: #0a0712; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: var(--transition); }
+        .btn-submit:disabled { background-color: #4a4365; cursor: not-allowed; }
+
+        .alert-box { padding: 16px; border-radius: 10px; margin-bottom: 24px; font-weight: 600; display: none; text-align: center; }
+        .alert-success { background-color: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #10b981; }
     </style>
 </head>
 <body>
 
     <div class="admin-container">
+        <h1>Tambah Video Baru</h1>
         <div class="alert-box alert-success" id="successAlert">✅ Video berhasil dipublikasikan!</div>
-        <div class="alert-box alert-error" id="errorAlert">❌ Gagal mengupload data.</div>
-
+        
         <div class="form-card">
             <form id="uploadForm">
-                <div class="form-grid">
-                    <div class="form-group full-width"><label>Judul Video</label><input type="text" id="inpTitle" required></div>
-                    <div class="form-group"><label>URL Video</label><input type="url" id="inpVideoUrl" required></div>
-                    <div class="form-group"><label>URL Thumbnail</label><input type="url" id="inpThumbnail" required></div>
-                    
-                    <div class="form-group">
-                        <label>Kategori</label>
-                        <select id="inpCategorySelect"><option value="">Pilih Kategori...</option></select>
-                        <input type="text" id="inpCategoryManual" placeholder="Tulis kategori baru" style="display:none; margin-top:5px;">
-                        <button type="button" class="btn-toggle" onclick="toggle('inpCategoryManual')">+ Tambah Kategori Baru</button>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Negara</label>
-                        <select id="inpCountrySelect"><option value="">Pilih Negara...</option></select>
-                        <input type="text" id="inpCountryManual" placeholder="Tulis negara baru" style="display:none; margin-top:5px;">
-                        <button type="button" class="btn-toggle" onclick="toggle('inpCountryManual')">+ Tambah Negara Baru</button>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Channel</label>
-                        <select id="inpChannelSelect" onchange="updateAvatar()"><option value="">Pilih Channel...</option></select>
-                        <input type="text" id="inpChannelManual" placeholder="Nama channel baru" style="display:none; margin-top:5px;">
-                        <button type="button" class="btn-toggle" onclick="toggle('inpChannelManual')">+ Channel Baru</button>
-                    </div>
-
-                    <div class="form-group"><label>URL Avatar</label><input type="url" id="inpAvatar"></div>
-
-                    <div class="form-group full-width">
-                        <label>Durasi Video</label>
-                        <div style="display: flex; gap: 10px;">
-                            <select id="durJam"></select>
-                            <select id="durMenit"></select>
-                            <select id="durDetik"></select>
-                        </div>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label>Tags (Pilih yang sudah ada)</label>
-                        <div id="tagsContainer" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
-                        <input type="text" id="inpTagsManual" placeholder="Tambah tag baru (pisahkan koma)">
-                    </div>
+                <div class="form-group">
+                    <label>Judul Video</label>
+                    <input type="text" id="inpTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>URL Video & Thumbnail</label>
+                    <input type="url" id="inpVideoUrl" placeholder="Video URL" required>
+                    <input type="url" id="inpThumbnail" placeholder="Thumbnail URL" required>
+                </div>
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <input list="categoryList" id="inpCategory" placeholder="Pilih/Ketik kategori..." required>
+                    <datalist id="categoryList"></datalist>
+                </div>
+                <div class="form-group">
+                    <label>Negara</label>
+                    <select id="inpCountry"></select>
+                </div>
+                <div class="form-group">
+                    <label>Channel</label>
+                    <select id="inpChannel"><option value="new">➕ Buat Channel Baru</option></select>
+                    <input type="url" id="inpAvatar" placeholder="URL Avatar" style="display:none; margin-top:5px;">
+                </div>
+                <div class="form-group">
+                    <label>Durasi (Contoh: 05:30)</label>
+                    <input type="text" id="inpDuration" required>
+                </div>
+                <div class="form-group">
+                    <label>Tags</label>
+                    <div id="tagsContainer" class="tags-checklist"></div>
+                    <input type="text" id="inpNewTags" placeholder="Tambah tag baru (pisahkan koma)...">
                 </div>
                 <button type="submit" class="btn-submit" id="btnSubmit">Publikasikan Video</button>
             </form>
@@ -93,78 +78,83 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const db = getFirestore(initializeApp({
+        // KONFIGURASI FIREBASE ANDA
+        const firebaseConfig = {
             apiKey: "AIzaSyA8-TN3r2KNL-XEHZ5lF3-rkVyj2qQe9so",
-            projectId: "ngews-web"
-        }));
+            authDomain: "ngews-web.firebaseapp.com",
+            projectId: "ngews-web",
+            storageBucket: "ngews-web.firebasestorage.app",
+            messagingSenderId: "1952425136",
+            appId: "1:1952425136:web:3267816a6b05772d688775"
+        };
 
-        let channelMap = {}; 
-        window.toggle = (id) => document.getElementById(id).style.display = 'block';
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        let channelMap = {};
 
-        async function initForm() {
-            for(let i=0; i<=5; i++) durJam.innerHTML += `<option value="${i}">${i} Jam</option>`;
-            for(let i=0; i<60; i++) {
-                durMenit.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')} Menit</option>`;
-                durDetik.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')} Detik</option>`;
-            }
-
-            const snapshot = await getDocs(collection(db, "videos"));
+        // 1. Load data lama agar Admin Panel cerdas
+        async function loadAdminData() {
+            const querySnapshot = await getDocs(collection(db, "videos"));
             const cats = new Set(), counts = new Set(), tags = new Set();
-            snapshot.forEach(doc => {
+            querySnapshot.forEach(doc => {
                 const d = doc.data();
                 if(d.category) cats.add(d.category);
                 if(d.country) counts.add(d.country);
+                if(d.channel) { channelMap[d.channel] = d.avatar; addChannelOpt(d.channel); }
                 if(d.tags) d.tags.forEach(t => tags.add(t));
-                if(d.channel) channelMap[d.channel] = d.avatar || "";
             });
-
-            cats.forEach(c => inpCategorySelect.innerHTML += `<option value="${c}">${c}</option>`);
-            counts.forEach(c => inpCountrySelect.innerHTML += `<option value="${c}">${c}</option>`);
-            Object.keys(channelMap).forEach(ch => inpChannelSelect.innerHTML += `<option value="${ch}">${ch}</option>`);
-            tags.forEach(t => tagsContainer.innerHTML += `<label><input type="checkbox" class="tag-check" value="${t}"> ${t}</label>`);
+            
+            cats.forEach(c => document.getElementById('categoryList').innerHTML += `<option value="${c}">`);
+            counts.forEach(c => document.getElementById('inpCountry').innerHTML += `<option value="${c}">${c}</option>`);
+            tags.forEach(t => document.getElementById('tagsContainer').innerHTML += `<label><input type="checkbox" value="${t}"> ${t}</label>`);
         }
 
-        window.updateAvatar = () => {
-            const val = inpChannelSelect.value;
-            if(val && channelMap[val]) inpAvatar.value = channelMap[val];
-        };
+        function addChannelOpt(name) {
+            const sel = document.getElementById('inpChannel');
+            if(![...sel.options].some(o => o.value === name)) sel.innerHTML += `<option value="${name}">${name}</option>`;
+        }
 
-        uploadForm.addEventListener('submit', async (e) => {
+        document.getElementById('inpChannel').addEventListener('change', (e) => {
+            const av = document.getElementById('inpAvatar');
+            av.style.display = (e.target.value === 'new' || e.target.value !== "") ? 'block' : 'none';
+            av.value = channelMap[e.target.value] || "";
+        });
+
+        // 2. Kirim ke Firebase dengan Efek Loading
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            btnSubmit.disabled = true;
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.textContent = "Sedang Mengunggah...";
+
+            const finalTags = [...new Set([...[...document.querySelectorAll('#tagsContainer input:checked')].map(i => i.value), ...document.getElementById('inpNewTags').value.split(',').map(t => t.trim()).filter(t => t)])];
 
             try {
-                const finalTags = Array.from(document.querySelectorAll('.tag-check:checked')).map(c => c.value);
-                const extraTags = inpTagsManual.value.split(',').map(t => t.trim()).filter(t => t);
-                
                 await addDoc(collection(db, "videos"), {
-                    title: inpTitle.value,
-                    // KITA TAMBAHKAN KEMBALI DI SINI:
-                    videoUrl: inpVideoUrl.value,
-                    thumbnail: inpThumbnail.value,
-                    category: inpCategoryManual.value || inpCategorySelect.value,
-                    country: inpCountryManual.value || inpCountrySelect.value,
-                    channel: inpChannelManual.value || inpChannelSelect.value,
-                    avatar: inpAvatar.value,
-                    duration: `${durJam.value}:${durMenit.value.padStart(2,'0')}:${durDetik.value.padStart(2,'0')}`,
-                    tags: [...new Set([...finalTags, ...extraTags])],
+                    title: document.getElementById('inpTitle').value,
+                    videoUrl: document.getElementById('inpVideoUrl').value,
+                    thumbnail: document.getElementById('inpThumbnail').value,
+                    category: document.getElementById('inpCategory').value,
+                    country: document.getElementById('inpCountry').value,
+                    channel: document.getElementById('inpChannel').value,
+                    avatar: document.getElementById('inpAvatar').value || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde",
+                    duration: document.getElementById('inpDuration').value,
+                    tags: finalTags,
                     views: 0, likes: 0, dislikes: 0, comments: [],
                     uploadDate: serverTimestamp()
                 });
-
-                successAlert.style.setProperty('display', 'flex', 'important');
-                window.scrollTo(0,0);
-                setTimeout(() => successAlert.style.display = 'none', 4000);
-                uploadForm.reset();
-            } catch (err) {
-                errorAlert.textContent = "❌ Gagal: " + err.message;
-                errorAlert.style.setProperty('display', 'flex', 'important');
-            } finally { btnSubmit.disabled = false; }
+                
+                document.getElementById('successAlert').style.display = 'block';
+                document.getElementById('uploadForm').reset();
+                setTimeout(() => document.getElementById('successAlert').style.display = 'none', 3000);
+            } catch (err) { alert("Gagal: " + err.message); } 
+            finally { btn.disabled = false; btn.textContent = "Publikasikan Video"; }
         });
 
-        initForm();
+        loadAdminData();
     </script>
 </body>
 </html>
