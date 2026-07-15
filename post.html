@@ -4,247 +4,151 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Postingan - NGews Admin</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --bg-base: #0a0712;
             --bg-surface: #120d24;
-            --bg-surface-hover: #1c1533;
             --accent: #b493ff;
-            --accent-glow: rgba(180, 147, 255, 0.3);
             --text-main: #f3f1f6;
             --text-muted: #9e97b2;
             --border-color: #231b3d;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg-base); color: var(--text-main); line-height: 1.6; padding-bottom: 60px; }
-
-        header {
-            background-color: var(--bg-surface); border-bottom: 1px solid var(--border-color);
-            padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 100;
-        }
-
-        .logo { font-weight: 700; font-size: 1.5rem; color: var(--text-main); text-decoration: none; }
-        .logo span { color: var(--accent); }
-        .btn-back { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: var(--transition); display: flex; align-items: center; gap: 8px;}
-        .btn-back:hover { color: var(--accent); }
+        body { background-color: var(--bg-base); color: var(--text-main); padding-bottom: 60px; }
 
         .admin-container { max-width: 800px; margin: 40px auto; padding: 0 24px; }
-        .admin-header { margin-bottom: 30px; }
-        .admin-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
-        .admin-subtitle { color: var(--text-muted); font-size: 0.95rem; }
-
-        .form-card {
-            background-color: var(--bg-surface); border: 1px solid var(--border-color);
-            border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
+        .form-card { background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { display: flex; flex-direction: column; gap: 8px; }
         .form-group.full-width { grid-column: span 2; }
         
-        label { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
-        label span { color: #ff6b6b; } /* Bintang merah untuk required */
-
-        input, select {
-            background-color: var(--bg-base); border: 1px solid var(--border-color);
-            color: var(--text-main); padding: 14px 16px; border-radius: 10px; font-size: 0.95rem;
-            transition: var(--transition); outline: none; width: 100%;
-        }
-        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
-        input::placeholder { color: #4a4365; }
-
-        .btn-submit {
-            background-color: var(--accent); color: #0a0712; border: none; width: 100%;
-            padding: 16px; border-radius: 10px; font-size: 1.05rem; font-weight: 700;
-            cursor: pointer; margin-top: 30px; transition: var(--transition);
-        }
-        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 20px var(--accent-glow); }
-        .btn-submit:disabled { background-color: #4a4365; color: #8e87a3; cursor: not-allowed; transform: none; box-shadow: none; }
-
-        .alert-box {
-            padding: 16px; border-radius: 10px; margin-bottom: 24px; font-weight: 600; font-size: 0.95rem;
-            display: none; align-items: center; justify-content: center;
-        }
-        .alert-success { background-color: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; }
-        .alert-error { background-color: rgba(255, 107, 107, 0.15); border: 1px solid #ff6b6b; color: #ff6b6b; }
-
-        @media (max-width: 600px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .form-group.full-width { grid-column: span 1; }
-        }
+        input, select { background-color: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 8px; width: 100%; }
+        
+        .alert-box { padding: 16px; border-radius: 10px; margin-bottom: 20px; display: none; text-align: center; font-weight: 600; }
+        .alert-success { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #10b981; }
+        .alert-error { background: rgba(255, 107, 107, 0.2); border: 1px solid #ff6b6b; color: #ff6b6b; }
+        
+        .btn-submit { background: var(--accent); color: #0a0712; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 20px; }
+        .btn-toggle { background: none; border: none; color: var(--accent); cursor: pointer; text-align: left; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-    <header>
-        <a href="index.html" class="logo">NGews <span>Admin</span></a>
-        <a href="index.html" class="btn-back">❮ Kembali ke Web</a>
-    </header>
-
     <div class="admin-container">
-        <div class="admin-header">
-            <h1 class="admin-title">Tambah Video Baru</h1>
-            <p class="admin-subtitle">Data yang dikirim akan otomatis masuk ke database Firebase Firestore.</p>
-        </div>
-
         <div class="alert-box alert-success" id="successAlert">✅ Video berhasil dipublikasikan!</div>
-        <div class="alert-box alert-error" id="errorAlert">❌ Gagal mengupload data. Coba lagi.</div>
+        <div class="alert-box alert-error" id="errorAlert">❌ Gagal mengupload data.</div>
 
         <div class="form-card">
             <form id="uploadForm">
                 <div class="form-grid">
+                    <div class="form-group full-width"><label>Judul Video</label><input type="text" id="inpTitle" required></div>
+                    <div class="form-group"><label>URL Video</label><input type="url" id="inpVideoUrl" required></div>
+                    <div class="form-group"><label>URL Thumbnail</label><input type="url" id="inpThumbnail" required></div>
                     
-                    <!-- JUDUL -->
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <select id="inpCategorySelect"><option value="">Pilih Kategori...</option></select>
+                        <input type="text" id="inpCategoryManual" placeholder="Tulis kategori baru" style="display:none;">
+                        <button type="button" class="btn-toggle" onclick="toggle('inpCategoryManual')">+ Tambah Kategori Baru</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Negara</label>
+                        <select id="inpCountrySelect"><option value="">Pilih Negara...</option></select>
+                        <input type="text" id="inpCountryManual" placeholder="Tulis negara baru" style="display:none;">
+                        <button type="button" class="btn-toggle" onclick="toggle('inpCountryManual')">+ Tambah Negara Baru</button>
+                    </div>
+
+                    <div class="form-group"><label>Channel</label><input type="text" id="inpChannel" required></div>
+                    <div class="form-group"><label>URL Avatar</label><input type="url" id="inpAvatar"></div>
+
                     <div class="form-group full-width">
-                        <label>Judul Video <span>*</span></label>
-                        <input type="text" id="inpTitle" placeholder="Masukkan judul video..." required>
+                        <label>Durasi Video</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="durJam"></select>
+                            <select id="durMenit"></select>
+                            <select id="durDetik"></select>
+                        </div>
                     </div>
 
-                    <!-- URL VIDEO & THUMBNAIL -->
-                    <div class="form-group">
-                        <label>URL Video <span>*</span></label>
-                        <input type="url" id="inpVideoUrl" placeholder="https://..." required>
+                    <div class="form-group full-width">
+                        <label>Tags (Pilih yang sudah ada)</label>
+                        <div id="tagsContainer" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+                        <input type="text" id="inpTagsManual" placeholder="Tambah tag baru (pisahkan koma)">
                     </div>
-                    <div class="form-group">
-                        <label>URL Thumbnail <span>*</span></label>
-                        <input type="url" id="inpThumbnail" placeholder="https://..." required>
-                    </div>
-
-                    <!-- KATEGORI & NEGARA -->
-                    <div class="form-group">
-                        <label>Kategori <span>*</span></label>
-                        <input type="text" id="inpCategory" placeholder="Contoh: Hiburan, Berita, dll" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Negara <span>*</span></label>
-                        <input type="text" id="inpCountry" placeholder="Contoh: Indonesia, Global" required>
-                    </div>
-
-                    <!-- NAMA CHANNEL & AVATAR -->
-                    <div class="form-group">
-                        <label>Nama Kreator / Channel <span>*</span></label>
-                        <input type="text" id="inpChannel" placeholder="Nama pengunggah..." required>
-                    </div>
-                    <div class="form-group">
-                        <label>URL Avatar Kreator</label>
-                        <input type="url" id="inpAvatar" placeholder="Opsional (Kosongi untuk default)">
-                    </div>
-
-                    <!-- DURASI & TAGS -->
-                    <div class="form-group">
-                        <label>Durasi Video <span>*</span></label>
-                        <input type="text" id="inpDuration" placeholder="Contoh: 05:30" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Tags (Pisahkan dengan Koma) <span>*</span></label>
-                        <input type="text" id="inpTags" placeholder="viral, fyp, trending" required>
-                    </div>
-
                 </div>
-
                 <button type="submit" class="btn-submit" id="btnSubmit">Publikasikan Video</button>
             </form>
         </div>
     </div>
 
-    <!-- SCRIPT FIREBASE MODULAR -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        // IMPORT addDoc dan serverTimestamp UNTUK UPLOAD OTOMATIS
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Konfigurasi Firebase Anda
-        const firebaseConfig = {
+        const db = getFirestore(initializeApp({
             apiKey: "AIzaSyA8-TN3r2KNL-XEHZ5lF3-rkVyj2qQe9so",
-            authDomain: "ngews-web.firebaseapp.com",
-            projectId: "ngews-web",
-            storageBucket: "ngews-web.firebasestorage.app",
-            messagingSenderId: "1952425136",
-            appId: "1:1952425136:web:3267816a6b05772d688775"
-        };
+            projectId: "ngews-web"
+        }));
 
-        // Inisialisasi Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        // --- Load Data dari Firebase ---
+        async function initForm() {
+            // Isi durasi
+            for(let i=0; i<=5; i++) durJam.innerHTML += `<option value="${i}">${i} Jam</option>`;
+            for(let i=0; i<60; i++) {
+                durMenit.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')} Menit</option>`;
+                durDetik.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')} Detik</option>`;
+            }
 
-        // Referensi Elemen Form
-        const uploadForm = document.getElementById('uploadForm');
-        const btnSubmit = document.getElementById('btnSubmit');
-        const successAlert = document.getElementById('successAlert');
-        const errorAlert = document.getElementById('errorAlert');
+            // Ambil data lama
+            const snapshot = await getDocs(collection(db, "videos"));
+            const cats = new Set(), counts = new Set(), tags = new Set();
+            snapshot.forEach(doc => {
+                const d = doc.data();
+                if(d.category) cats.add(d.category);
+                if(d.country) counts.add(d.country);
+                if(d.tags) d.tags.forEach(t => tags.add(t));
+            });
+
+            cats.forEach(c => inpCategorySelect.innerHTML += `<option value="${c}">${c}</option>`);
+            counts.forEach(c => inpCountrySelect.innerHTML += `<option value="${c}">${c}</option>`);
+            tags.forEach(t => tagsContainer.innerHTML += `<label><input type="checkbox" class="tag-check" value="${t}"> ${t}</label>`);
+        }
+
+        window.toggle = (id) => document.getElementById(id).style.display = 'block';
 
         uploadForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Mencegah halaman refresh otomatis
-            
-            // Ubah tampilan tombol saat proses loading
-            btnSubmit.textContent = "Mengunggah Data...";
+            e.preventDefault();
             btnSubmit.disabled = true;
-            successAlert.style.display = 'none';
-            errorAlert.style.display = 'none';
 
             try {
-                // 1. Ambil & Olah Data Inputan
-                const rawTags = document.getElementById('inpTags').value;
-                // Ubah string "tag1, tag2" menjadi array ["tag1", "tag2"] dan hapus spasi berlebih
-                const arrayTags = rawTags.split(',').map(tag => tag.trim()).filter(tag => tag !== "");
-
-                const defaultAvatar = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80";
-                const inputAvatar = document.getElementById('inpAvatar').value.trim();
-
-                // 2. Susun Struktur Dokumen JSON sesuai skema Database Kamu
-                const newPostData = {
-                    title: document.getElementById('inpTitle').value.trim(),
-                    videoUrl: document.getElementById('inpVideoUrl').value.trim(),
-                    thumbnail: document.getElementById('inpThumbnail').value.trim(),
-                    category: document.getElementById('inpCategory').value.trim(),
-                    country: document.getElementById('inpCountry').value.trim(),
-                    channel: document.getElementById('inpChannel').value.trim(),
-                    avatar: inputAvatar !== "" ? inputAvatar : defaultAvatar,
-                    duration: document.getElementById('inpDuration').value.trim(),
-                    tags: arrayTags,
-                    
-                    // Properti Otomatis Dibuat Oleh Sistem Form (Tidak perlu diisi manual)
-                    views: 0,
-                    likes: 0,
-                    dislikes: 0,
-                    comments: [],
-                    
-                    // FUNGSI SAKTI: Waktu upload otomatis disetel sesuai server Google!
-                    uploadDate: serverTimestamp() 
-                };
-
-                // 3. Kirim ke Koleksi "videos" di Firebase
-                // Menggunakan addDoc akan otomatis men-generate ID acak yang aman (cth: aB3x9Yq...)
-                const docRef = await addDoc(collection(db, "videos"), newPostData);
+                const finalTags = Array.from(document.querySelectorAll('.tag-check:checked')).map(c => c.value);
+                const extraTags = inpTagsManual.value.split(',').map(t => t.trim()).filter(t => t);
                 
-                // 4. Reset Form & Tampilkan Sukses
-                console.log("Berhasil ditambah dengan ID: ", docRef.id);
+                await addDoc(collection(db, "videos"), {
+                    title: inpTitle.value,
+                    category: inpCategoryManual.value || inpCategorySelect.value,
+                    country: inpCountryManual.value || inpCountrySelect.value,
+                    duration: `${durJam.value}:${durMenit.value.padStart(2,'0')}:${durDetik.value.padStart(2,'0')}`,
+                    tags: [...new Set([...finalTags, ...extraTags])],
+                    // ... tambahkan field lainnya
+                    uploadDate: serverTimestamp()
+                });
+
+                successAlert.style.setProperty('display', 'flex', 'important');
+                window.scrollTo(0,0);
+                setTimeout(() => successAlert.style.display = 'none', 4000);
                 uploadForm.reset();
-                successAlert.style.display = 'flex';
-                
-            } catch (error) {
-                console.error("Error menambah dokumen: ", error);
-                errorAlert.style.display = 'flex';
-                errorAlert.textContent = `❌ Gagal: ${error.message}`;
-            } finally {
-                // Kembalikan tombol ke keadaan semula
-                btnSubmit.textContent = "Publikasikan Video";
-                btnSubmit.disabled = false;
-                
-                // Sembunyikan notif sukses setelah 4 detik
-                setTimeout(() => {
-                    successAlert.style.display = 'none';
-                    errorAlert.style.display = 'none';
-                }, 4000);
-            }
+            } catch (err) {
+                errorAlert.textContent = "❌ Gagal: " + err.message;
+                errorAlert.style.setProperty('display', 'flex', 'important');
+            } finally { btnSubmit.disabled = false; }
         });
+
+        initForm();
     </script>
 </body>
 </html>
