@@ -7,27 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --bg-base: #0a0712; --bg-surface: #120d24; --accent: #b493ff;
-            --text-main: #f3f1f6; --text-muted: #9e97b2; --border-color: #231b3d;
-            --transition: all 0.3s ease;
-        }
+        :root { --bg-base: #0a0712; --bg-surface: #120d24; --accent: #b493ff; --text-main: #f3f1f6; --text-muted: #9e97b2; --border-color: #231b3d; }
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg-base); color: var(--text-main); padding-bottom: 60px; }
-        
         .admin-container { max-width: 800px; margin: 40px auto; padding: 0 24px; }
         .form-card { background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px; }
-        
-        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
-        input, select { background-color: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 10px; }
-        
-        .tags-checklist { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; background: var(--bg-base); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); }
-        .tags-checklist label { cursor: pointer; font-size: 0.85rem; }
-        
-        .btn-submit { background-color: var(--accent); color: #0a0712; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: var(--transition); }
-        .btn-submit:disabled { background-color: #4a4365; cursor: not-allowed; }
-
-        .alert-box { padding: 16px; border-radius: 10px; margin-bottom: 24px; font-weight: 600; display: none; text-align: center; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        input, select { background-color: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 10px; width: 100%; }
+        .btn-submit { background-color: var(--accent); color: #0a0712; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .alert-box { padding: 16px; border-radius: 10px; margin-bottom: 24px; display: none; text-align: center; }
         .alert-success { background-color: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #10b981; }
     </style>
 </head>
@@ -48,29 +36,40 @@
                     <input type="url" id="inpVideoUrl" placeholder="Video URL" required>
                     <input type="url" id="inpThumbnail" placeholder="Thumbnail URL" required>
                 </div>
+
+                <!-- KATEGORI & NEGARA (Datalist: Bisa pilih atau ketik manual) -->
                 <div class="form-group">
                     <label>Kategori</label>
-                    <input list="categoryList" id="inpCategory" placeholder="Pilih/Ketik kategori..." required>
+                    <input list="categoryList" id="inpCategory" placeholder="Pilih atau ketik kategori baru..." required>
                     <datalist id="categoryList"></datalist>
                 </div>
                 <div class="form-group">
                     <label>Negara</label>
-                    <select id="inpCountry"></select>
+                    <input list="countryList" id="inpCountry" placeholder="Pilih atau ketik negara baru..." required>
+                    <datalist id="countryList"></datalist>
                 </div>
+
+                <!-- CHANNEL (Select + Auto-fill Avatar) -->
                 <div class="form-group">
                     <label>Channel</label>
-                    <select id="inpChannel"><option value="new">➕ Buat Channel Baru</option></select>
-                    <input type="url" id="inpAvatar" placeholder="URL Avatar" style="display:none; margin-top:5px;">
+                    <select id="inpChannel">
+                        <option value="new">➕ Buat Channel Baru</option>
+                    </select>
+                    <input type="text" id="newChannelName" placeholder="Nama Channel Baru" style="display:none; margin-top:5px;">
+                    <input type="url" id="inpAvatar" placeholder="URL Avatar Kreator" style="margin-top:5px;">
                 </div>
+
                 <div class="form-group">
                     <label>Durasi (Contoh: 05:30)</label>
                     <input type="text" id="inpDuration" required>
                 </div>
+                
                 <div class="form-group">
-                    <label>Tags</label>
-                    <div id="tagsContainer" class="tags-checklist"></div>
+                    <label>Tags (Pilih yang ada atau tambah baru)</label>
+                    <div id="tagsContainer" style="display:flex; flex-wrap:wrap; gap:10px; background:var(--bg-base); padding:10px; border-radius:10px;"></div>
                     <input type="text" id="inpNewTags" placeholder="Tambah tag baru (pisahkan koma)...">
                 </div>
+
                 <button type="submit" class="btn-submit" id="btnSubmit">Publikasikan Video</button>
             </form>
         </div>
@@ -95,69 +94,49 @@
         let channelMap = {};
 
         async function loadAdminData() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "videos"));
-                const cats = new Set(), counts = new Set(), tags = new Set();
-                
-                querySnapshot.forEach(doc => {
-                    const d = doc.data();
-                    if(d.category) cats.add(d.category);
-                    if(d.country) counts.add(d.country);
-                    if(d.channel) { 
-                        channelMap[d.channel] = d.avatar; 
-                        // Tambah ke select channel jika belum ada
-                        const sel = document.getElementById('inpChannel');
-                        if(![...sel.options].some(o => o.value === d.channel)) {
-                            const opt = document.createElement('option');
-                            opt.value = d.channel; opt.textContent = d.channel;
-                            sel.appendChild(opt);
-                        }
+            const querySnapshot = await getDocs(collection(db, "videos"));
+            const cats = new Set(), counts = new Set(), tags = new Set();
+            
+            querySnapshot.forEach(doc => {
+                const d = doc.data();
+                if(d.category) cats.add(d.category);
+                if(d.country) counts.add(d.country);
+                if(d.channel) { 
+                    channelMap[d.channel] = d.avatar; 
+                    const sel = document.getElementById('inpChannel');
+                    if(![...sel.options].some(o => o.value === d.channel)) {
+                        sel.innerHTML += `<option value="${d.channel}">${d.channel}</option>`;
                     }
-                    if(d.tags && Array.isArray(d.tags)) d.tags.forEach(t => tags.add(t));
-                });
-                
-                // Isi Datalist Kategori
-                const catList = document.getElementById('categoryList');
-                catList.innerHTML = ""; // Bersihkan dulu
-                cats.forEach(c => catList.innerHTML += `<option value="${c}">`);
-
-                // Isi Select Negara
-                const countrySel = document.getElementById('inpCountry');
-                countrySel.innerHTML = '<option value="">-- Pilih atau ketik --</option>';
-                counts.forEach(c => countrySel.innerHTML += `<option value="${c}">${c}</option>`);
-
-                // Isi Tags Checklist
-                const tagCont = document.getElementById('tagsContainer');
-                tagCont.innerHTML = "";
-                tags.forEach(t => tagCont.innerHTML += `<label><input type="checkbox" value="${t}"> ${t}</label>`);
-
-            } catch (err) {
-                console.error("Gagal memuat data admin:", err);
-            }
+                }
+                if(d.tags) d.tags.forEach(t => tags.add(t));
+            });
+            
+            cats.forEach(c => document.getElementById('categoryList').innerHTML += `<option value="${c}">`);
+            counts.forEach(c => document.getElementById('countryList').innerHTML += `<option value="${c}">`);
+            tags.forEach(t => document.getElementById('tagsContainer').innerHTML += `<label><input type="checkbox" value="${t}"> ${t}</label>`);
         }
 
-        // Jalankan saat halaman siap
-        window.addEventListener('DOMContentLoaded', loadAdminData);
-
-        // Logika Channel Baru/Pilih
+        // Logic Channel: Jika pilih "Buat Baru", munculkan input teks nama channel
         document.getElementById('inpChannel').addEventListener('change', (e) => {
-            const av = document.getElementById('inpAvatar');
-            const val = e.target.value;
-            if(val === 'new') {
-                av.style.display = 'block'; av.value = "";
-            } else if (val !== "") {
-                av.style.display = 'block'; av.value = channelMap[val] || "";
+            const newNameInp = document.getElementById('newChannelName');
+            const avInp = document.getElementById('inpAvatar');
+            if(e.target.value === 'new') {
+                newNameInp.style.display = 'block';
+                avInp.value = "";
             } else {
-                av.style.display = 'none';
+                newNameInp.style.display = 'none';
+                avInp.value = channelMap[e.target.value] || "";
             }
         });
 
-        // Submit form
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
-            btn.disabled = true;
-            btn.textContent = "Sedang Mengunggah...";
+            btn.disabled = true; btn.textContent = "Mengunggah...";
+
+            // Ambil nama channel: apakah dari dropdown atau input manual
+            const selChannel = document.getElementById('inpChannel').value;
+            const channelName = (selChannel === 'new') ? document.getElementById('newChannelName').value : selChannel;
 
             const finalTags = [...new Set([...[...document.querySelectorAll('#tagsContainer input:checked')].map(i => i.value), ...document.getElementById('inpNewTags').value.split(',').map(t => t.trim()).filter(t => t)])];
 
@@ -168,21 +147,21 @@
                     thumbnail: document.getElementById('inpThumbnail').value,
                     category: document.getElementById('inpCategory').value,
                     country: document.getElementById('inpCountry').value,
-                    channel: document.getElementById('inpChannel').value,
+                    channel: channelName,
                     avatar: document.getElementById('inpAvatar').value || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde",
                     duration: document.getElementById('inpDuration').value,
                     tags: finalTags,
                     views: 0, likes: 0, dislikes: 0, comments: [],
                     uploadDate: serverTimestamp()
                 });
-                
                 document.getElementById('successAlert').style.display = 'block';
                 document.getElementById('uploadForm').reset();
                 setTimeout(() => document.getElementById('successAlert').style.display = 'none', 3000);
             } catch (err) { alert("Gagal: " + err.message); } 
             finally { btn.disabled = false; btn.textContent = "Publikasikan Video"; }
         });
-    </script>
 
+        loadAdminData();
+    </script>
 </body>
 </html>
