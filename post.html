@@ -51,18 +51,24 @@
                     <div class="form-group">
                         <label>Kategori</label>
                         <select id="inpCategorySelect"><option value="">Pilih Kategori...</option></select>
-                        <input type="text" id="inpCategoryManual" placeholder="Tulis kategori baru" style="display:none;">
+                        <input type="text" id="inpCategoryManual" placeholder="Tulis kategori baru" style="display:none; margin-top:5px;">
                         <button type="button" class="btn-toggle" onclick="toggle('inpCategoryManual')">+ Tambah Kategori Baru</button>
                     </div>
 
                     <div class="form-group">
                         <label>Negara</label>
                         <select id="inpCountrySelect"><option value="">Pilih Negara...</option></select>
-                        <input type="text" id="inpCountryManual" placeholder="Tulis negara baru" style="display:none;">
+                        <input type="text" id="inpCountryManual" placeholder="Tulis negara baru" style="display:none; margin-top:5px;">
                         <button type="button" class="btn-toggle" onclick="toggle('inpCountryManual')">+ Tambah Negara Baru</button>
                     </div>
 
-                    <div class="form-group"><label>Channel</label><input type="text" id="inpChannel" required></div>
+                    <div class="form-group">
+                        <label>Channel</label>
+                        <select id="inpChannelSelect" onchange="updateAvatar()"><option value="">Pilih Channel...</option></select>
+                        <input type="text" id="inpChannelManual" placeholder="Nama channel baru" style="display:none; margin-top:5px;">
+                        <button type="button" class="btn-toggle" onclick="toggle('inpChannelManual')">+ Channel Baru</button>
+                    </div>
+
                     <div class="form-group"><label>URL Avatar</label><input type="url" id="inpAvatar"></div>
 
                     <div class="form-group full-width">
@@ -94,16 +100,16 @@
             projectId: "ngews-web"
         }));
 
-        // --- Load Data dari Firebase ---
+        let channelMap = {}; 
+        window.toggle = (id) => document.getElementById(id).style.display = 'block';
+
         async function initForm() {
-            // Isi durasi
             for(let i=0; i<=5; i++) durJam.innerHTML += `<option value="${i}">${i} Jam</option>`;
             for(let i=0; i<60; i++) {
                 durMenit.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')} Menit</option>`;
                 durDetik.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')} Detik</option>`;
             }
 
-            // Ambil data lama
             const snapshot = await getDocs(collection(db, "videos"));
             const cats = new Set(), counts = new Set(), tags = new Set();
             snapshot.forEach(doc => {
@@ -111,14 +117,19 @@
                 if(d.category) cats.add(d.category);
                 if(d.country) counts.add(d.country);
                 if(d.tags) d.tags.forEach(t => tags.add(t));
+                if(d.channel) channelMap[d.channel] = d.avatar || "";
             });
 
             cats.forEach(c => inpCategorySelect.innerHTML += `<option value="${c}">${c}</option>`);
             counts.forEach(c => inpCountrySelect.innerHTML += `<option value="${c}">${c}</option>`);
+            Object.keys(channelMap).forEach(ch => inpChannelSelect.innerHTML += `<option value="${ch}">${ch}</option>`);
             tags.forEach(t => tagsContainer.innerHTML += `<label><input type="checkbox" class="tag-check" value="${t}"> ${t}</label>`);
         }
 
-        window.toggle = (id) => document.getElementById(id).style.display = 'block';
+        window.updateAvatar = () => {
+            const val = inpChannelSelect.value;
+            if(val && channelMap[val]) inpAvatar.value = channelMap[val];
+        };
 
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -132,9 +143,11 @@
                     title: inpTitle.value,
                     category: inpCategoryManual.value || inpCategorySelect.value,
                     country: inpCountryManual.value || inpCountrySelect.value,
+                    channel: inpChannelManual.value || inpChannelSelect.value,
+                    avatar: inpAvatar.value,
                     duration: `${durJam.value}:${durMenit.value.padStart(2,'0')}:${durDetik.value.padStart(2,'0')}`,
                     tags: [...new Set([...finalTags, ...extraTags])],
-                    // ... tambahkan field lainnya
+                    views: 0, likes: 0, dislikes: 0, comments: [],
                     uploadDate: serverTimestamp()
                 });
 
