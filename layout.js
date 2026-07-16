@@ -1,5 +1,5 @@
 // ==========================================
-// 1. TEMPLATE HEADER & SIDEBAR
+// 1. TEMPLATE HEADER & SIDEBAR LENGKAP
 // ==========================================
 const headerHTML = `
     <header>
@@ -22,19 +22,34 @@ const headerHTML = `
 
 const sidebarHTML = `
     <div class="drawer-overlay" id="drawerOverlay"></div>
-    <aside id="sidebar" class="nav-drawer">
+    <aside id="sidebar">
         <p class="sidebar-title">Menu Utama</p>
         <ul class="sidebar-menu">
-            <li class="sidebar-item" id="menuBeranda">
-                <a href="index.html">
+            <li class="sidebar-item active" id="menuBeranda">
+                <a href="index.html" id="btnBeranda">
                     <div class="sidebar-item-inner">
                         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                         Beranda
                     </div>
                 </a>
             </li>
-            
-            <li class="sidebar-item-dropdown" id="dropdownKategoriWrapper">
+            <li class="sidebar-item" id="menuPopuler">
+                <a href="#" id="btnPopuler">
+                    <div class="sidebar-item-inner">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        Populer
+                    </div>
+                </a>
+            </li>
+            <li class="sidebar-item" id="menuMostLiked">
+                <a href="#" id="btnMostLiked">
+                    <div class="sidebar-item-inner">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"></path></svg>
+                        Most Liked
+                    </div>
+                </a>
+            </li>
+            <li class="sidebar-item-dropdown">
                 <button class="sidebar-dropdown-toggle" id="dropdownToggleBtn">
                     <div class="dropdown-label-wrapper">
                         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 7h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -43,7 +58,7 @@ const sidebarHTML = `
                     <span class="dropdown-arrow">❯</span>
                 </button>
                 <ul class="sidebar-submenu-list" id="sidebarSubmenu">
-                    <!-- Kategori akan diisi oleh Firebase di index.html -->
+                    <!-- Kategori Otomatis -->
                 </ul>
             </li>
         </ul>
@@ -58,6 +73,22 @@ const sidebarHTML = `
                     </div>
                 </a>
             </li>
+            <li class="sidebar-item">
+                <a href="#">
+                    <div class="sidebar-item-inner">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Riwayat
+                    </div>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#">
+                    <div class="sidebar-item-inner">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        Video Disukai
+                    </div>
+                </a>
+            </li>
         </ul>
     </aside>
 `;
@@ -66,21 +97,20 @@ const sidebarHTML = `
 // 2. FUNGSI UNTUK MENYUNTIKKAN KE HTML
 // ==========================================
 export function renderLayout() {
-    // Sisipkan Header ke dalam div #app-header
-    document.getElementById('app-header').innerHTML = headerHTML;
+    const headerContainer = document.getElementById('app-header');
+    const sidebarContainer = document.getElementById('app-sidebar');
     
-    // Sisipkan Sidebar ke dalam div #app-sidebar
-    document.getElementById('app-sidebar').innerHTML = sidebarHTML;
+    if(headerContainer) headerContainer.innerHTML = headerHTML;
+    if(sidebarContainer) sidebarContainer.innerHTML = sidebarHTML;
 
-    // Aktifkan Logika Interaksi Sidebar & Search setelah disuntikkan
     setupLayoutInteractions();
 }
 
 // ==========================================
-// 3. LOGIKA ANIMASI & KLIK (Berlaku Global)
+// 3. LOGIKA INTERAKSI MENU & SIDEBAR
 // ==========================================
 function setupLayoutInteractions() {
-    // Logika Search Bar Animasi
+    // Search Bar Logika
     const searchToggleBtn = document.getElementById('searchToggleBtn');
     const expandableSearch = document.getElementById('expandableSearch');
     const expandingInput = document.getElementById('searchInput');
@@ -103,36 +133,35 @@ function setupLayoutInteractions() {
         expandingInput.addEventListener('click', (e) => e.stopPropagation());
     }
 
-    // Logika Sidebar Menu & Mobile Drawer
+    // Toggle Sidebar & Drawer Logika
     const menuToggleBtn = document.getElementById('menuToggleBtn');
     const sidebar = document.getElementById('sidebar');
     const drawerOverlay = document.getElementById('drawerOverlay');
     const mainContent = document.getElementById('mainContent');
 
-    if(menuToggleBtn) {
+    if(menuToggleBtn && sidebar) {
         menuToggleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             if (window.innerWidth > 768) {
-                // Mode Laptop/PC
+                // PC Mode
                 sidebar.classList.toggle('collapsed');
                 if(mainContent) mainContent.classList.toggle('expanded');
             } else {
-                // Mode HP (Drawer)
+                // HP Mode
                 sidebar.classList.toggle('active');
                 if(drawerOverlay) drawerOverlay.classList.toggle('active');
             }
         });
     }
 
-    // Tutup Drawer di HP saat overlay diklik
-    if(drawerOverlay) {
+    if(drawerOverlay && sidebar) {
         drawerOverlay.addEventListener('click', () => {
             sidebar.classList.remove('active');
             drawerOverlay.classList.remove('active');
         });
     }
 
-    // Logika Dropdown Kategori
+    // Dropdown Kategori
     const dropdownToggleBtn = document.getElementById('dropdownToggleBtn');
     if(dropdownToggleBtn) {
         dropdownToggleBtn.addEventListener('click', (e) => {
