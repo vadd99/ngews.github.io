@@ -59,16 +59,12 @@ main {
     flex: 1;
     width: 100%;
     transition: var(--transition);
+    /* Di PC, berikan ruang untuk Sidebar */
+    margin-left: var(--sidebar-width); 
 }
 
-@media (min-width: 769px) {
-    main { margin-left: var(--sidebar-width); }
-    main.expanded { margin-left: 0; }
-}
-
-@media (max-width: 768px) {
-    main { margin-left: 0 !important; }
-}
+/* Kelas saat sidebar disembunyikan di PC */
+main.expanded { margin-left: 0; }
 
 /* ==========================================
    SIDEBAR (DESKTOP & MOBILE DRAWER)
@@ -78,7 +74,6 @@ main {
     position: fixed; top: 70px; bottom: 0; left: 0; z-index: 90; overflow-y: auto; transition: var(--transition); padding: 24px 16px;
 }
 #sidebar.collapsed { left: calc(-1 * var(--sidebar-width)); }
-#sidebar.active { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.5); } 
 
 .drawer-overlay { position: fixed; top: 70px; left: 0; right: 0; bottom: 0; background: rgba(10,7,18,0.7); z-index: 89; backdrop-filter: blur(4px); display: none; opacity: 0; transition: var(--transition); }
 .drawer-overlay.active { display: block; opacity: 1; }
@@ -99,3 +94,17 @@ main {
 .sidebar-dropdown-toggle.active + .sidebar-submenu-list { max-height: 400px; margin-top: 4px; margin-bottom: 8px; }
 .submenu-item a { display: block; padding: 10px 0; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: var(--transition); }
 .submenu-item.active a, .submenu-item a:hover { color: var(--accent); }
+
+/* ==========================================
+   RESPONSIVE (TAMPILAN HP & TABLET)
+========================================== */
+@media (max-width: 768px) {
+    /* 1. Sembunyikan sidebar di luar layar pada HP secara default */
+    #sidebar { left: calc(-1 * var(--sidebar-width)); }
+    
+    /* 2. Tarik sidebar ke dalam layar saat diklik (Drawer Mode) */
+    #sidebar.active { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+    
+    /* 3. Konten Utama mengambil lebar penuh (tanpa jarak sidebar) */
+    main { margin-left: 0 !important; }
+}
