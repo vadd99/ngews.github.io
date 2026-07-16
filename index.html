@@ -18,11 +18,10 @@
            CSS KHUSUS HALAMAN INDEX (BERANDA)
         ========================================== */
         
-        /* APP CONTAINER KHUSUS INDEX */
-        .app-container {
-            display: flex;
-            padding-top: 70px;
-            min-height: 100vh;
+        /* MENGEMBALIKAN JARAK KANAN-KIRI AGAR RAPI */
+        main#mainContent {
+            padding: 32px 24px;
+            max-width: 1400px;
         }
 
         /* HERO SLIDER */
@@ -88,6 +87,7 @@
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
+            main#mainContent { padding: 20px 16px; }
             .slide-item { height: 250px; }
             .hero-play-btn { width: 60px; height: 60px; }
             .slider-nav { width: 36px; height: 36px; font-size: 1rem; }
@@ -107,12 +107,11 @@
 </head>
 <body>
 
-    <!-- WADAH UNTUK HEADER YANG DISUNTIKKAN DARI LAYOUT.JS -->
+    <!-- WADAH UNTUK HEADER -->
     <div id="app-header"></div>
 
     <div class="app-container">
-        
-        <!-- WADAH UNTUK SIDEBAR YANG DISUNTIKKAN DARI LAYOUT.JS -->
+        <!-- WADAH UNTUK SIDEBAR -->
         <div id="app-sidebar"></div>
 
         <!-- MAIN CONTENT AREA -->
@@ -174,15 +173,14 @@
 
     <!-- SCRIPT FIREBASE & LOGIKA HALAMAN -->
     <script type="module">
-        // 1. RENDER LAYOUT (HEADER & SIDEBAR) DULU SEBELUM FIREBASE BERJALAN
+        // 1. RENDER LAYOUT 
         import { renderLayout } from './layout.js';
         renderLayout();
 
-        // 2. IMPORT SDK FIREBASE SECARA MODULAR
+        // 2. IMPORT SDK FIREBASE 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyA8-TN3r2KNL-XEHZ5lF3-rkVyj2qQe9so",
             authDomain: "ngews-web.firebaseapp.com",
@@ -195,7 +193,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // STATE DATA UTAMA
         let mockVideos = [];
         let kategoriAktif = 'Semua';
         let tagAktif = 'Semua';
@@ -204,7 +201,6 @@
 
         const expandingInput = document.getElementById('searchInput');
 
-        // FUNGSI UNTUK MENGAMBIL DATA DARI FIREBASE FIRESTORE
         async function ambilDataPostingan() {
             try {
                 const querySnapshot = await getDocs(collection(db, "videos"));
@@ -238,18 +234,15 @@
                 document.getElementById('videoGrid').innerHTML = `
                     <div style="grid-column: span 2; text-align: center; padding: 40px; color: #ff6b6b">
                         <p style="font-size: 1.2rem; margin-bottom: 8px;">Gagal memuat postingan</p>
-                        <p style="font-size: 0.9rem;">Periksa konfigurasi database atau rules keamanan di Firestore.</p>
                     </div>
                 `;
             }
         }
         ambilDataPostingan();
 
-        // FORMAT TANGGAL
         function formatWaktuUpload(tanggalUpload) {
             const sekarang = new Date();
             const selisihDetik = Math.floor((sekarang - tanggalUpload) / 1000);
-
             if (selisihDetik < 60) return 'Baru saja';
             const selisihMenit = Math.floor(selisihDetik / 60);
             if (selisihMenit < 60) return `${selisihMenit} menit yang lalu`;
@@ -257,14 +250,12 @@
             if (selisihJam < 24) return `${selisihJam} jam yang lalu`;
             const selisihHari = Math.floor(selisihJam / 24);
             if (selisihHari < 7) return `${selisihHari} hari yang lalu`;
-            
             return tanggalUpload.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
         }
 
-        // GENERATE KATEGORI DI SIDEBAR
         function buatSidebarKategoriDinamis() {
             const sidebarSubmenu = document.getElementById('sidebarSubmenu');
-            if(!sidebarSubmenu) return; // Mencegah error jika elemen belum ada
+            if(!sidebarSubmenu) return; 
 
             const setKategori = new Set();
             mockVideos.forEach(video => {
@@ -294,17 +285,19 @@
 
                     const sidebar = document.getElementById('sidebar');
                     if (window.innerWidth <= 768 && sidebar) sidebar.classList.remove('active');
+                    const drawerOverlay = document.getElementById('drawerOverlay');
+                    if(drawerOverlay) drawerOverlay.classList.remove('active');
                 });
                 sidebarSubmenu.appendChild(li);
             });
         }
 
-        // AMANKAN EVENT LISTENER FILTER SIDEBAR (Mencegah Crash jika tombol tidak ada di layout.js)
-        document.getElementById('menuBeranda')?.addEventListener('click', (e) => {
+        // EVENT LISTENER MENU UTAMA SIDEBAR
+        document.getElementById('btnBeranda')?.addEventListener('click', (e) => {
             e.preventDefault();
             document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
-            e.currentTarget.classList.add('active');
+            document.getElementById('menuBeranda').classList.add('active');
             
             kategoriAktif = 'Semua'; tagAktif = 'Semua'; negaraAktif = 'Global'; sortMode = 'Terbaru';
             if(expandingInput) expandingInput.value = '';
@@ -313,22 +306,27 @@
             buatTagsDinamis(); jalankanFilterSistem();
         });
 
-        document.getElementById('menuPopuler')?.addEventListener('click', (e) => {
+        document.getElementById('btnPopuler')?.addEventListener('click', (e) => {
             e.preventDefault();
             document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
-            e.currentTarget.classList.add('active');
+            document.getElementById('menuPopuler').classList.add('active');
 
             sortMode = 'Populer';
             document.getElementById('gridSectionTitle').textContent = `Trending Videos`;
             jalankanFilterSistem();
+            
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth <= 768 && sidebar) sidebar.classList.remove('active');
+            const drawerOverlay = document.getElementById('drawerOverlay');
+            if(drawerOverlay) drawerOverlay.classList.remove('active');
         });
 
-        document.getElementById('menuMostLiked')?.addEventListener('click', (e) => {
+        document.getElementById('btnMostLiked')?.addEventListener('click', (e) => {
             e.preventDefault();
             document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
-            e.currentTarget.classList.add('active');
+            document.getElementById('menuMostLiked').classList.add('active');
 
             sortMode = 'MostLiked';
             document.getElementById('gridSectionTitle').textContent = `Most Liked Videos`;
@@ -336,9 +334,10 @@
 
             const sidebar = document.getElementById('sidebar');
             if (window.innerWidth <= 768 && sidebar) sidebar.classList.remove('active');
+            const drawerOverlay = document.getElementById('drawerOverlay');
+            if(drawerOverlay) drawerOverlay.classList.remove('active');
         });
 
-        // GENERATE TOP TAGS & NEGARA
         function buatTagsDinamis() {
             const categoryContainer = document.getElementById('categoryTagsContainer');
             const countryContainer = document.getElementById('countryTagsContainer');
@@ -355,12 +354,7 @@
                 }
             });
 
-            const arrayTagPopuler = Object.keys(hitungTag)
-                .map(key => ({ nama: key, jumlah: hitungTag[key] }))
-                .sort((a, b) => b.jumlah - a.jumlah)
-                .slice(0, 20)
-                .map(item => item.nama);
-
+            const arrayTagPopuler = Object.keys(hitungTag).map(key => ({ nama: key, jumlah: hitungTag[key] })).sort((a, b) => b.jumlah - a.jumlah).slice(0, 20).map(item => item.nama);
             const list20TagFinal = ['Semua', ...arrayTagPopuler];
 
             categoryContainer.innerHTML = '';
@@ -370,18 +364,13 @@
                 pill.textContent = tag;
                 pill.addEventListener('click', () => {
                     document.querySelectorAll('#categoryTagsContainer .tag-pill').forEach(p => p.classList.remove('active'));
-                    pill.classList.add('active');
-                    tagAktif = tag; jalankanFilterSistem();
+                    pill.classList.add('active'); tagAktif = tag; jalankanFilterSistem();
                 });
                 categoryContainer.appendChild(pill);
             });
 
             const setNegara = new Set(['Global']);
-            mockVideos.forEach(video => {
-                if (video.country && video.country.toString().trim() !== "") {
-                    setNegara.add(video.country.toString().trim());
-                }
-            });
+            mockVideos.forEach(video => { if (video.country && video.country.toString().trim() !== "") setNegara.add(video.country.toString().trim()); });
 
             countryContainer.innerHTML = '';
             setNegara.forEach(negara => {
@@ -390,8 +379,7 @@
                 pill.textContent = negara;
                 pill.addEventListener('click', () => {
                     document.querySelectorAll('#countryTagsContainer .tag-pill').forEach(p => p.classList.remove('active'));
-                    pill.classList.add('active');
-                    negaraAktif = negara; jalankanFilterSistem();
+                    pill.classList.add('active'); negaraAktif = negara; jalankanFilterSistem();
                 });
                 countryContainer.appendChild(pill);
             });
@@ -457,7 +445,6 @@
                 videoGrid.innerHTML = `
                     <div style="grid-column: span 2; text-align: center; padding: 40px; color: var(--text-muted)">
                         <p style="font-size: 1.2rem; margin-bottom: 8px;">Tidak ada hasil ditemukan</p>
-                        <p style="font-size: 0.9rem;">Cobalah ubah filter pencarian atau kategori Anda.</p>
                     </div>
                 `;
                 return;
