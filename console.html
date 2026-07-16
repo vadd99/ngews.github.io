@@ -20,18 +20,21 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg-base); color: var(--text-main); display: flex; min-height: 100vh; }
+        body { background-color: var(--bg-base); color: var(--text-main); }
 
-        /* SIDEBAR / NAVBAR KIRI */
-        aside { width: 260px; background-color: var(--bg-surface); border-right: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; }
-        .brand { font-size: 1.5rem; font-weight: 800; color: var(--text-main); text-decoration: none; margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+        /* HEADER SEDERHANA */
+        header { 
+            background-color: var(--bg-surface); border-bottom: 1px solid var(--border-color); 
+            padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .brand { font-size: 1.5rem; font-weight: 800; color: var(--text-main); text-decoration: none; letter-spacing: -0.5px;}
         .brand span { color: var(--accent); }
-        .nav-menu { display: flex; flex-direction: column; gap: 10px; }
-        .nav-item { padding: 12px 16px; border-radius: 10px; color: var(--text-muted); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
-        .nav-item:hover, .nav-item.active { background-color: rgba(180, 147, 255, 0.1); color: var(--accent); }
-        
+        .link-website { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: 0.3s; display: flex; align-items: center; gap: 6px;}
+        .link-website:hover { color: var(--accent); }
+
         /* MAIN CONTENT */
-        main { flex: 1; padding: 40px; overflow-y: auto; }
+        main { padding: 40px; max-width: 1200px; margin: 0 auto; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .page-title { font-size: 1.8rem; font-weight: 700; }
         .btn-primary { background-color: var(--accent); color: #0a0712; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
@@ -83,10 +86,7 @@
         .btn-save { background: var(--accent); color: #0a0712; border: none; width: 100%; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; }
 
         @media (max-width: 768px) {
-            body { flex-direction: column; }
-            aside { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); padding: 16px; flex-direction: row; justify-content: space-between; align-items: center; }
-            .brand { margin-bottom: 0; }
-            .nav-menu { flex-direction: row; }
+            header { padding: 16px 20px; }
             main { padding: 20px; }
             .header-top { flex-direction: column; gap: 15px; align-items: flex-start; }
             td, th { padding: 12px 16px; }
@@ -95,14 +95,14 @@
 </head>
 <body>
 
-    <!-- SIDEBAR -->
-    <aside>
+    <!-- HEADER BARU (Simpel & Elegan) -->
+    <header>
         <a href="index.html" class="brand">NGews <span>Console</span></a>
-        <div class="nav-menu">
-            <a href="#" class="nav-item active">🎥 Konten Video</a>
-            <a href="index.html" class="nav-item">🌐 Lihat Website</a>
-        </div>
-    </aside>
+        <a href="index.html" class="link-website">
+            Lihat Website
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        </a>
+    </header>
 
     <!-- KONTEN UTAMA -->
     <main>
@@ -172,7 +172,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // CONFIG FIREBASE KAMU
+        // CONFIG FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyA8-TN3r2KNL-XEHZ5lF3-rkVyj2qQe9so",
             authDomain: "ngews-web.firebaseapp.com",
@@ -189,13 +189,12 @@
         const totalVideosEl = document.getElementById('totalVideos');
         const editModal = document.getElementById('editModal');
         const editForm = document.getElementById('editForm');
-        let currentVideos = []; // Simpan data sementara di sini
+        let currentVideos = []; 
 
-        // FUNGSI 1: AMBIL DATA & TAMPILKAN DI TABEL
         async function loadConsoleData() {
             try {
                 const querySnapshot = await getDocs(collection(db, "videos"));
-                tableBody.innerHTML = ''; // Bersihkan tabel loading
+                tableBody.innerHTML = ''; 
                 currentVideos = [];
 
                 if (querySnapshot.empty) {
@@ -208,16 +207,14 @@
 
                 querySnapshot.forEach((doc) => {
                     const d = doc.data();
-                    d.id = doc.id; // Simpan ID dokumen
+                    d.id = doc.id; 
                     currentVideos.push(d);
                     
-                    // Format Waktu yang Aman
                     let tglStr = "Tidak diketahui";
                     if (d.uploadDate && d.uploadDate.toDate) {
                         tglStr = d.uploadDate.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
                     }
 
-                    // Render Baris Tabel
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>
@@ -246,7 +243,6 @@
                     tableBody.appendChild(row);
                 });
 
-                // Pasang Event Listener ke Semua Tombol yang baru dibuat
                 document.querySelectorAll('.btn-delete').forEach(btn => {
                     btn.addEventListener('click', (e) => hapusVideo(e.currentTarget.getAttribute('data-id')));
                 });
@@ -260,36 +256,32 @@
             }
         }
 
-        // FUNGSI 2: HAPUS POSTINGAN (DELETE)
         async function hapusVideo(id) {
             const konfirmasi = confirm("⚠️ PERINGATAN: Apakah kamu yakin ingin menghapus video ini secara permanen?");
             if (konfirmasi) {
                 try {
                     await deleteDoc(doc(db, "videos", id));
                     alert("✅ Video berhasil dihapus!");
-                    loadConsoleData(); // Refresh tabel otomatis
+                    loadConsoleData(); 
                 } catch (err) {
                     alert("❌ Gagal menghapus: " + err.message);
                 }
             }
         }
 
-        // FUNGSI 3: LOGIKA MODAL EDIT
         window.closeModal = () => { editModal.classList.remove('active'); }
         
         function bukaModalEdit(id) {
-            // Cari data video dari array berdasarkan ID
             const videoData = currentVideos.find(v => v.id === id);
             if(videoData) {
                 document.getElementById('editId').value = videoData.id;
                 document.getElementById('editTitle').value = videoData.title;
                 document.getElementById('editVideoUrl').value = videoData.videoUrl;
                 document.getElementById('editCategory').value = videoData.category;
-                editModal.classList.add('active'); // Tampilkan Modal
+                editModal.classList.add('active'); 
             }
         }
 
-        // FUNGSI 4: SIMPAN PERUBAHAN (UPDATE)
         editForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSaveEdit');
@@ -297,7 +289,6 @@
 
             const idDoc = document.getElementById('editId').value;
             try {
-                // Update hanya properti yang diedit
                 await updateDoc(doc(db, "videos", idDoc), {
                     title: document.getElementById('editTitle').value,
                     videoUrl: document.getElementById('editVideoUrl').value,
@@ -306,7 +297,7 @@
                 
                 alert("✅ Perubahan berhasil disimpan!");
                 closeModal();
-                loadConsoleData(); // Refresh tabel agar menampilkan judul baru
+                loadConsoleData(); 
             } catch (err) {
                 alert("❌ Gagal update: " + err.message);
             } finally {
@@ -314,7 +305,6 @@
             }
         });
 
-        // Jalankan saat pertama kali dirender
         loadConsoleData();
     </script>
 </body>
