@@ -10,10 +10,18 @@ const headerHTML = `
             <a href="index.html" class="logo">NG<span>ews</span></a>
         </div>
         <div class="header-right">
+            <!-- Search Bar -->
             <div class="expandable-search" id="expandableSearch">
                 <input type="text" class="search-input-expanding" id="searchInput" placeholder="Cari berita atau video...">
                 <button class="search-icon-btn" id="searchToggleBtn" aria-label="Cari">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Tombol Login / Profil -->
+            <div id="userArea" style="margin-left: 12px;">
+                <button id="loginBtn" style="background:var(--accent); border:none; padding:8px 16px; border-radius:20px; color:#0a0712; font-weight:600; cursor:pointer;">
+                    Login
                 </button>
             </div>
         </div>
@@ -169,4 +177,22 @@ function setupLayoutInteractions() {
             dropdownToggleBtn.classList.toggle('active');
         });
     }
+} // <--- PERHATIKAN: Fungsi setupLayoutInteractions ditutup di sini
+
+// ==========================================
+// 4. FUNGSI EKSPOR LAINNYA
+// ==========================================
+// Fungsi ini harus berada di luar fungsi lain agar bisa diekspor
+export function isiSubmenuKategori(kategoriArray) {
+    const sidebarSubmenu = document.getElementById('sidebarSubmenu');
+    if (!sidebarSubmenu) return;
+
+    sidebarSubmenu.innerHTML = '';
+    kategoriArray.forEach(kategori => {
+        const li = document.createElement('li');
+        li.className = 'submenu-item';
+        // Saat diklik, arahkan ke halaman utama dengan parameter kategori
+        li.innerHTML = `<a href="index.html?cat=${encodeURIComponent(kategori)}">${kategori}</a>`;
+        sidebarSubmenu.appendChild(li);
+    });
 }

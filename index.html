@@ -173,14 +173,22 @@
 
     <!-- SCRIPT FIREBASE & LOGIKA HALAMAN -->
     <script type="module">
-        // 1. RENDER LAYOUT 
+        // ==========================================
+        // 1. IMPORT SEMUA MODULE (WAJIB DI ATAS)
+        // ==========================================
         import { renderLayout } from './layout.js';
-        renderLayout();
-
-        // 2. IMPORT SDK FIREBASE 
+        import { loginGoogle, cekStatusLogin, logoutGoogle } from './auth.js';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // ==========================================
+        // 2. RENDER LAYOUT UTAMA (HEADER & SIDEBAR)
+        // ==========================================
+        renderLayout();
+
+        // ==========================================
+        // 3. INISIALISASI FIREBASE
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyA8-TN3r2KNL-XEHZ5lF3-rkVyj2qQe9so",
             authDomain: "ngews-web.firebaseapp.com",
@@ -189,18 +197,44 @@
             messagingSenderId: "1952425136",
             appId: "1:1952425136:web:3267816a6b05772d688775"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // ==========================================
+        // 4. LOGIKA AUTENTIKASI (LOGIN/LOGOUT)
+        // ==========================================
+        cekStatusLogin((user) => {
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) {
+                if (user) {
+                    // Jika sudah login: tampilkan foto profil
+                    loginBtn.innerHTML = `<img src="${user.photoURL}" style="width:32px; height:32px; border-radius:50%; vertical-align:middle; border: 2px solid var(--accent); object-fit: cover;">`;
+                    loginBtn.title = "Klik untuk Logout";
+                    loginBtn.onclick = () => {
+                        if(confirm("Apakah kamu yakin ingin keluar dari akun?")) logoutGoogle();
+                    };
+                } else {
+                    // Jika belum login: tampilkan tombol Login
+                    loginBtn.textContent = "Login";
+                    loginBtn.title = "Login dengan Google";
+                    loginBtn.onclick = () => loginGoogle().catch(err => console.error(err));
+                }
+            }
+        });
+
+        // ==========================================
+        // 5. VARIABEL STATE & DATA
+        // ==========================================
         let mockVideos = [];
         let kategoriAktif = 'Semua';
         let tagAktif = 'Semua';
         let negaraAktif = 'Global';
         let sortMode = 'Terbaru'; 
-
         const expandingInput = document.getElementById('searchInput');
 
+        // ==========================================
+        // 6. LOGIKA PENGAMBILAN DATA (FIRESTORE)
+        // ==========================================
         async function ambilDataPostingan() {
             try {
                 const querySnapshot = await getDocs(collection(db, "videos"));
@@ -234,12 +268,16 @@
                 document.getElementById('videoGrid').innerHTML = `
                     <div style="grid-column: span 2; text-align: center; padding: 40px; color: #ff6b6b">
                         <p style="font-size: 1.2rem; margin-bottom: 8px;">Gagal memuat postingan</p>
+                        <p style="font-size: 0.9rem;">Periksa koneksi atau konfigurasi database.</p>
                     </div>
                 `;
             }
         }
         ambilDataPostingan();
 
+        // ==========================================
+        // 7. FUNGSI UTILITAS & RENDER UI
+        // ==========================================
         function formatWaktuUpload(tanggalUpload) {
             const sekarang = new Date();
             const selisihDetik = Math.floor((sekarang - tanggalUpload) / 1000);
@@ -385,7 +423,9 @@
             });
         }
 
-        // HERO SLIDER LOGIC
+        // ==========================================
+        // 8. LOGIKA HERO SLIDER
+        // ==========================================
         const sliderTrack = document.getElementById('heroSliderTrack');
         const sliderDots = document.getElementById('sliderDots');
         const sliderPrev = document.getElementById('sliderPrev');
@@ -437,7 +477,9 @@
         heroSliderContainer.addEventListener('mouseenter', () => clearInterval(autoPlaySlider));
         heroSliderContainer.addEventListener('mouseleave', () => { clearInterval(autoPlaySlider); autoPlaySlider = setInterval(nextSlide, 5000); });
 
-        // RENDER VIDEO ITEMS TO GRID
+        // ==========================================
+        // 9. LOGIKA FILTER & RENDER GRID
+        // ==========================================
         const videoGrid = document.getElementById('videoGrid');
         function renderVideos(videos) {
             videoGrid.innerHTML = '';
@@ -479,7 +521,6 @@
             });
         }
 
-        // FILTER SYSTEM
         function jalankanFilterSistem() {
             const keyword = expandingInput ? expandingInput.value.toLowerCase() : "";
             
