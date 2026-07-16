@@ -4,905 +4,118 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NGews - Platform Video Minimalis Modern</title>
-    <!-- Google Fonts: Plus Jakarta Sans untuk tampilan modern & minimalis -->
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- IMPOR CSS GLOBAL (Header, Sidebar, Variables) -->
+    <link rel="stylesheet" href="style.css">
+    
     <style>
-        /* CSS RESET & VARIABLES */
-        :root {
-            --bg-base: #0a0712;      /* Hitam keunguan sangat gelap */
-            --bg-surface: #120d24;   /* Ungu gelap untuk card/sidebar */
-            --bg-surface-hover: #1c1533;
-            --accent: #b493ff;       /* Ungu muda / Lavender cerah */
-            --accent-glow: rgba(180, 147, 255, 0.3);
-            --text-main: #f3f1f6;    /* Putih abu-abu lembut */
-            --text-muted: #9e97b2;   /* Ungu abu-abu pudar */
-            --border-color: #231b3d; /* Garis batas tipis ungu tua */
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --sidebar-width: 260px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            overflow-x: hidden;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-base);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent);
-        }
-
-        /* HEADER */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 70px;
-            background-color: rgba(10, 7, 18, 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            z-index: 100;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .menu-toggle {
-            background: none;
-            border: none;
-            color: var(--text-main);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        .menu-toggle:hover {
-            background-color: var(--bg-surface-hover);
-            color: var(--accent);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            font-weight: 700;
-            font-size: 1.5rem;
-            letter-spacing: -0.5px;
-            color: var(--text-main);
-            text-decoration: none;
-        }
-
-        .logo span {
-            color: var(--accent);
-            text-shadow: 0 0 10px var(--accent-glow);
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-        }
-
-        /* EXPANDABLE SEARCH STYLES */
-        .expandable-search {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            height: 44px;
-        }
-
-        .search-input-expanding {
-            position: absolute;
-            right: 0;
-            width: 0;
-            height: 100%;
-            opacity: 0;
-            padding: 0;
-            border: 1px solid transparent;
-            border-radius: 50px;
-            background-color: var(--bg-surface);
-            color: var(--text-main);
-            font-size: 0.95rem;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.4s ease;
-            outline: none;
-        }
-
-        .expandable-search.active .search-input-expanding {
-            width: 320px;
-            opacity: 1;
-            padding: 10px 45px 10px 20px;
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-
-        .search-icon-btn {
-            background: none;
-            border: none;
-            color: var(--accent);
-            cursor: pointer;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            transition: var(--transition);
-        }
-
-        .search-icon-btn:hover {
-            background-color: rgba(180, 147, 255, 0.15);
-        }
-
-        /* APP LAYOUT */
+        /* ==========================================
+           CSS KHUSUS HALAMAN INDEX (BERANDA)
+        ========================================== */
+        
+        /* APP CONTAINER KHUSUS INDEX */
         .app-container {
             display: flex;
             padding-top: 70px;
             min-height: 100vh;
         }
 
-        /* SIDEBAR */
-        aside {
-            width: var(--sidebar-width);
-            background-color: var(--bg-surface);
-            border-right: 1px solid var(--border-color);
-            position: fixed;
-            top: 70px;
-            bottom: 0;
-            left: 0;
-            z-index: 90;
-            overflow-y: auto;
-            transition: var(--transition);
-            padding: 24px 16px;
-        }
-
-        aside.collapsed {
-            left: calc(-1 * var(--sidebar-width));
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-
-        .sidebar-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            margin-left: 12px;
-            margin-bottom: 12px;
-            font-weight: 700;
-        }
-
-        .sidebar-item a, .sidebar-dropdown-toggle {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: var(--transition);
-            cursor: pointer;
-            width: 100%;
-            background: none;
-            border: none;
-            text-align: left;
-            box-sizing: border-box;
-        }
-
-        .sidebar-dropdown-toggle {
-            justify-content: space-between;
-        }
-
-        .dropdown-label-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .sidebar-item-inner {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            width: 100%;
-        }
-
-        .sidebar-item.active a, .sidebar-item a:hover, .sidebar-dropdown-toggle:hover {
-            color: var(--text-main);
-            background-color: var(--bg-surface-hover);
-        }
-
-        .sidebar-item.active a {
-            color: var(--accent);
-            border-left: 3px solid var(--accent);
-            border-radius: 4px 12px 12px 4px;
-            padding-left: 13px;
-        }
-
-        /* SUB-MENU DROPDOWN STYLE */
-        .dropdown-arrow {
-            font-size: 0.75rem;
-            transition: transform 0.3s ease;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-        }
-
-        .sidebar-dropdown-toggle.active .dropdown-arrow {
-            transform: rotate(90deg);
-            color: var(--accent);
-        }
-
-        .sidebar-submenu-list {
-            list-style: none;
-            padding-left: 50px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin 0.3s ease;
-            margin-top: 0;
-        }
-
-        .sidebar-dropdown-toggle.active + .sidebar-submenu-list {
-            max-height: 400px;
-            margin-top: 4px;
-            margin-bottom: 8px;
-        }
-
-        .submenu-item a {
-            display: block;
-            padding: 10px 0;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.9rem;
-            border-radius: 0;
-            transition: var(--transition);
-            background: none;
-        }
-
-        .submenu-item.active a, .submenu-item a:hover {
-            color: var(--accent);
-            background: none;
-        }
-
-        /* MAIN CONTENT AREA */
-        main {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            padding: 32px 24px;
-            transition: var(--transition);
-            max-width: 1400px;
-            width: 100%;
-        }
-
-        main.expanded {
-            margin-left: 0;
-        }
-
         /* HERO SLIDER */
-        .hero-slider-section {
-            margin-bottom: 36px;
-        }
-
-        .badge-premium {
-            background-color: rgba(180, 147, 255, 0.2);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            width: fit-content;
-            margin-bottom: 16px;
-            text-transform: uppercase;
-        }
-
-        .slider-container {
-            position: relative;
-            width: 100%;
-            border-radius: 20px;
-            overflow: hidden;
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            touch-action: pan-y;
-        }
-
-        .slider-track {
-            display: flex;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform;
-        }
-
-        .slide-item {
-            flex: 0 0 100%;
-            height: 400px;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .slide-item::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(0deg, rgba(10,7,18,0.7) 0%, rgba(10,7,18,0.2) 50%, rgba(10,7,18,0.7) 100%);
-        }
-
-        .hero-play-btn {
-            position: relative;
-            z-index: 2;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: var(--accent);
-            border: none;
-            color: #0a0712;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 0 30px var(--accent-glow);
-            transition: var(--transition);
-            transform: scale(0.9);
-        }
-
-        .hero-play-btn:hover {
-            transform: scale(1.1);
-            background-color: var(--text-main);
-        }
-
-        .slider-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(18, 13, 36, 0.7);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            font-size: 1.2rem;
-            cursor: pointer;
-            z-index: 10;
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-
-        .slider-nav:hover {
-            background: var(--accent);
-            color: #0a0712;
-        }
-
+        .hero-slider-section { margin-bottom: 36px; }
+        .badge-premium { background-color: rgba(180, 147, 255, 0.2); border: 1px solid var(--accent); color: var(--accent); padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; width: fit-content; margin-bottom: 16px; text-transform: uppercase; }
+        .slider-container { position: relative; width: 100%; border-radius: 20px; overflow: hidden; background-color: var(--bg-surface); border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.3); touch-action: pan-y; }
+        .slider-track { display: flex; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
+        .slide-item { flex: 0 0 100%; height: 400px; background-size: cover; background-position: center; position: relative; display: flex; align-items: center; justify-content: center; }
+        .slide-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(0deg, rgba(10,7,18,0.7) 0%, rgba(10,7,18,0.2) 50%, rgba(10,7,18,0.7) 100%); }
+        .hero-play-btn { position: relative; z-index: 2; width: 80px; height: 80px; border-radius: 50%; background-color: var(--accent); border: none; color: #0a0712; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 30px var(--accent-glow); transition: var(--transition); transform: scale(0.9); }
+        .hero-play-btn:hover { transform: scale(1.1); background-color: var(--text-main); }
+        .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(18, 13, 36, 0.7); border: 1px solid var(--border-color); color: var(--text-main); font-size: 1.2rem; cursor: pointer; z-index: 10; backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .slider-nav:hover { background: var(--accent); color: #0a0712; }
         .slider-nav.prev { left: 16px; }
         .slider-nav.next { right: 16px; }
-
-        .slider-dots {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-            z-index: 10;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: rgba(255,255,255,0.3);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .dot.active {
-            background-color: var(--accent);
-            width: 24px;
-            border-radius: 4px;
-        }
+        .slider-dots { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background-color: rgba(255,255,255,0.3); cursor: pointer; transition: var(--transition); }
+        .dot.active { background-color: var(--accent); width: 24px; border-radius: 4px; }
 
         /* VIDEO GRID */
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-
-        .section-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .section-title::before {
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 24px;
-            background-color: var(--accent);
-            border-radius: 2px;
-        }
-
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 32px 24px;
-            margin-bottom: 60px;
-        }
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .section-title { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+        .section-title::before { content: ''; display: inline-block; width: 4px; height: 24px; background-color: var(--accent); border-radius: 2px; }
+        .video-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px 24px; margin-bottom: 60px; }
 
         /* VIDEO CARD */
-        .video-card {
-            background-color: var(--bg-surface);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            transition: var(--transition);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .video-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(180, 147, 255, 0.4);
-            box-shadow: 0 10px 25px rgba(10, 7, 18, 0.5), 0 0 15px rgba(180, 147, 255, 0.05);
-        }
-
-        .thumbnail-container {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%;
-            background-color: #1a1530;
-            overflow: hidden;
-        }
-
-        .video-thumbnail {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-
-        .video-card:hover .video-thumbnail {
-            transform: scale(1.05);
-        }
-
-        .duration-tag {
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            background-color: rgba(10, 7, 18, 0.85);
-            backdrop-filter: blur(4px);
-            color: var(--text-main);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .play-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(18, 13, 36, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: var(--transition);
-        }
-
-        .video-card:hover .play-overlay {
-            opacity: 1;
-        }
-
-        .play-icon-circle {
-            width: 50px;
-            height: 50px;
-            background-color: var(--accent);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 20px rgba(180, 147, 255, 0.6);
-            transform: scale(0.8);
-            transition: var(--transition);
-        }
-
-        .video-card:hover .play-icon-circle {
-            transform: scale(1);
-        }
-
-        .video-info {
-            padding: 20px;
-            display: flex;
-            gap: 16px;
-        }
-
-        .channel-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1.5px solid var(--border-color);
-        }
-
-        .video-text {
-            flex: 1;
-        }
-
-        .video-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            line-height: 1.4;
-            color: var(--text-main);
-            margin-bottom: 8px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .video-card:hover .video-title {
-            color: var(--accent);
-        }
-
-        .video-meta {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .channel-name {
-            font-weight: 500;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .verified-badge {
-            color: var(--accent);
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .stats-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .dot-separator {
-            width: 3px;
-            height: 3px;
-            background-color: var(--text-muted);
-            border-radius: 50%;
-        }
+        .video-card { background-color: var(--bg-surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); transition: var(--transition); cursor: pointer; display: flex; flex-direction: column; position: relative; }
+        .video-card:hover { transform: translateY(-6px); border-color: rgba(180, 147, 255, 0.4); box-shadow: 0 10px 25px rgba(10, 7, 18, 0.5), 0 0 15px rgba(180, 147, 255, 0.05); }
+        .thumbnail-container { position: relative; width: 100%; padding-top: 56.25%; background-color: #1a1530; overflow: hidden; }
+        .video-thumbnail { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: var(--transition); }
+        .video-card:hover .video-thumbnail { transform: scale(1.05); }
+        .duration-tag { position: absolute; bottom: 12px; right: 12px; background-color: rgba(10, 7, 18, 0.85); backdrop-filter: blur(4px); color: var(--text-main); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+        .play-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(18, 13, 36, 0.4); display: flex; align-items: center; justify-content: center; opacity: 0; transition: var(--transition); }
+        .video-card:hover .play-overlay { opacity: 1; }
+        .play-icon-circle { width: 50px; height: 50px; background-color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(180, 147, 255, 0.6); transform: scale(0.8); transition: var(--transition); }
+        .video-card:hover .play-icon-circle { transform: scale(1); }
+        .video-info { padding: 20px; display: flex; gap: 16px; }
+        .channel-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--border-color); }
+        .video-text { flex: 1; }
+        .video-title { font-size: 1.05rem; font-weight: 600; line-height: 1.4; color: var(--text-main); margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; transition: var(--transition); }
+        .video-card:hover .video-title { color: var(--accent); }
+        .video-meta { font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; }
+        .channel-name { font-weight: 500; color: var(--text-main); display: flex; align-items: center; gap: 4px; }
+        .verified-badge { color: var(--accent); display: inline-flex; align-items: center; }
+        .stats-row { display: flex; align-items: center; gap: 8px; }
+        .dot-separator { width: 3px; height: 3px; background-color: var(--text-muted); border-radius: 50%; }
 
         /* BOTTOM TAGS SECTION */
-        .bottom-tags-section {
-            border-top: 1px solid var(--border-color);
-            padding-top: 48px;
-            margin-top: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-        }
-
-        .tags-group {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .tags-group-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tags-group-title span {
-            color: var(--accent);
-        }
-
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .tag-pill {
-            background-color: var(--bg-surface);
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            padding: 8px 18px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-decoration: none;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .tag-pill:hover, .tag-pill.active {
-            background-color: var(--accent);
-            color: #0a0712;
-            border-color: var(--accent);
-            font-weight: 600;
-            box-shadow: 0 4px 15px var(--accent-glow);
-        }
+        .bottom-tags-section { border-top: 1px solid var(--border-color); padding-top: 48px; margin-top: 40px; display: flex; flex-direction: column; gap: 32px; }
+        .tags-group { display: flex; flex-direction: column; gap: 16px; }
+        .tags-group-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        .tags-group-title span { color: var(--accent); }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .tag-pill { background-color: var(--bg-surface); color: var(--text-muted); border: 1px solid var(--border-color); padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: 500; text-decoration: none; cursor: pointer; transition: var(--transition); }
+        .tag-pill:hover, .tag-pill.active { background-color: var(--accent); color: #0a0712; border-color: var(--accent); font-weight: 600; box-shadow: 0 4px 15px var(--accent-glow); }
 
         /* FOOTER */
-        footer {
-            border-top: 1px solid var(--border-color);
-            padding: 40px 0;
-            margin-top: 80px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            text-align: center;
-        }
+        footer { border-top: 1px solid var(--border-color); padding: 40px 0; margin-top: 80px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
+        .footer-links { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; transition: var(--transition); }
+        .footer-links a:hover { color: var(--accent); }
+        .copyright { font-size: 0.8rem; color: var(--text-muted); }
 
-        .footer-links {
-            display: flex;
-            gap: 24px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .footer-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: var(--transition);
-        }
-
-        .footer-links a:hover {
-            color: var(--accent);
-        }
-
-        .copyright {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        /* RESPONSIVE BREAKPOINTS */
-        @media (max-width: 1024px) {
-            :root {
-                --sidebar-width: 220px;
-            }
-        }
-
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            aside {
-                left: calc(-1 * var(--sidebar-width));
-            }
-            aside.active {
-                left: 0;
-                box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-            }
-            main {
-                margin-left: 0 !important;
-                padding: 20px 16px;
-            }
-            .slide-item {
-                height: 250px;
-            }
-            .hero-play-btn {
-                width: 60px;
-                height: 60px;
-            }
-            .slider-nav {
-                width: 36px;
-                height: 36px;
-                font-size: 1rem;
-            }
-            .video-grid {
-                gap: 16px;
-            }
-            .video-info {
-                padding: 12px;
-                gap: 8px;
-            }
-            .video-title {
-                font-size: 0.9rem;
-            }
-            .video-meta {
-                font-size: 0.75rem;
-            }
-            .channel-avatar {
-                width: 32px;
-                height: 32px;
-            }
+            .slide-item { height: 250px; }
+            .hero-play-btn { width: 60px; height: 60px; }
+            .slider-nav { width: 36px; height: 36px; font-size: 1rem; }
+            .video-grid { gap: 16px; }
+            .video-info { padding: 12px; gap: 8px; }
+            .video-title { font-size: 0.9rem; }
+            .video-meta { font-size: 0.75rem; }
+            .channel-avatar { width: 32px; height: 32px; }
         }
-
         @media (max-width: 480px) {
-            .video-grid {
-                grid-template-columns: repeat(2, 1fr); 
-                gap: 12px;
-            }
-            .video-title {
-                font-size: 0.8rem;
-                line-height: 1.3;
-            }
-            .channel-avatar {
-                display: none; 
-            }
-            .tag-pill {
-                padding: 6px 12px;
-                font-size: 0.75rem;
-            }
-            .expandable-search.active .search-input-expanding {
-                width: 220px;
-            }
+            .video-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .video-title { font-size: 0.8rem; line-height: 1.3; }
+            .channel-avatar { display: none; }
+            .tag-pill { padding: 6px 12px; font-size: 0.75rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header>
-        <div class="header-left">
-            <button class="menu-toggle" id="menuToggleBtn" aria-label="Toggle Sidebar">
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
-            <a href="#" class="logo">
-                NG<span>ews</span>
-            </a>
-        </div>
-
-        <div class="header-right">
-            <!-- Expandable Search -->
-            <div class="expandable-search" id="expandableSearch">
-                <input type="text" class="search-input-expanding" id="searchInput" placeholder="Cari berita atau video...">
-                <button class="search-icon-btn" id="searchToggleBtn" aria-label="Cari">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </button>
-            </div>
-        </div>
-    </header>
+    <!-- WADAH UNTUK HEADER YANG DISUNTIKKAN DARI LAYOUT.JS -->
+    <div id="app-header"></div>
 
     <div class="app-container">
         
-        <!-- SIDEBAR -->
-        <aside id="sidebar">
-            <p class="sidebar-title">Menu Utama</p>
-            <ul class="sidebar-menu">
-                <li class="sidebar-item active" id="menuBeranda">
-                    <a href="#" id="btnBeranda">
-                        <div class="sidebar-item-inner">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                            Beranda
-                        </div>
-                    </a>
-                </li>
-                <li class="sidebar-item" id="menuPopuler">
-                    <a href="#" id="btnPopuler">
-                        <div class="sidebar-item-inner">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            Populer
-                        </div>
-                    </a>
-                </li>
-                <!-- MENU MOST LIKED -->
-                <li class="sidebar-item" id="menuMostLiked">
-                    <a href="#" id="btnMostLiked">
-                        <div class="sidebar-item-inner">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"></path></svg>
-                            Most Liked
-                        </div>
-                    </a>
-                </li>
-                <!-- DROPDOWN KATEGORI -->
-                <li class="sidebar-item-dropdown">
-                    <button class="sidebar-dropdown-toggle" id="dropdownToggleBtn">
-                        <div class="dropdown-label-wrapper">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 7h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            Kategori
-                        </div>
-                        <span class="dropdown-arrow">❯</span>
-                    </button>
-                    <ul class="sidebar-submenu-list" id="sidebarSubmenu">
-                        <!-- Disuntikkan Secara Otomatis oleh JS -->
-                    </ul>
-                </li>
-            </ul>
+        <!-- WADAH UNTUK SIDEBAR YANG DISUNTIKKAN DARI LAYOUT.JS -->
+        <div id="app-sidebar"></div>
 
-            <p class="sidebar-title">Perpustakaan</p>
-            <ul class="sidebar-menu">
-                <li class="sidebar-item">
-                    <a href="#">
-                        <div class="sidebar-item-inner">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.158.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                            Koleksi Saya
-                        </div>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="#">
-                        <div class="sidebar-item-inner">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Riwayat
-                        </div>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="#">
-                        <div class="sidebar-item-inner">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                            Video Disukai
-                        </div>
-                    </a>
-                </li>
-            </ul>
-        </aside>
-
-        <!-- MAIN CONTENT -->
+        <!-- MAIN CONTENT AREA -->
         <main id="mainContent">
             
             <!-- FEATURED HERO SLIDER -->
@@ -959,12 +172,17 @@
         </main>
     </div>
 
-    <!-- IMPOR SDK FIREBASE SECARA MODULAR -->
+    <!-- SCRIPT FIREBASE & LOGIKA HALAMAN -->
     <script type="module">
+        // 1. RENDER LAYOUT (HEADER & SIDEBAR) DULU SEBELUM FIREBASE BERJALAN
+        import { renderLayout } from './layout.js';
+        renderLayout();
+
+        // 2. IMPORT SDK FIREBASE SECARA MODULAR
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Configuration Berdasarkan Data Akun Anda
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyA8-TN3r2KNL-XEHZ5lF3-rkVyj2qQe9so",
             authDomain: "ngews-web.firebaseapp.com",
@@ -974,7 +192,6 @@
             appId: "1:1952425136:web:3267816a6b05772d688775"
         };
 
-        // Inisialisasi Firebase & Firestore
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
@@ -983,59 +200,9 @@
         let kategoriAktif = 'Semua';
         let tagAktif = 'Semua';
         let negaraAktif = 'Global';
-        let sortMode = 'Terbaru'; // 'Terbaru', 'Populer', 'MostLiked'
+        let sortMode = 'Terbaru'; 
 
-        // EXPANDABLE SEARCH LOGIC
-        const searchToggleBtn = document.getElementById('searchToggleBtn');
-        const expandableSearch = document.getElementById('expandableSearch');
         const expandingInput = document.getElementById('searchInput');
-
-        searchToggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (!expandableSearch.classList.contains('active')) {
-                expandableSearch.classList.add('active');
-                expandingInput.focus();
-            } else {
-                if (expandingInput.value === '') { expandableSearch.classList.remove('active'); }
-            }
-        });
-        expandingInput.addEventListener('click', (e) => { e.stopPropagation(); });
-        document.addEventListener('click', (e) => {
-            if (expandableSearch.classList.contains('active') && expandingInput.value === '') {
-                expandableSearch.classList.remove('active');
-            }
-        });
-
-        // TOGGLE MENU UTAMA & MOBILE SIDEBAR
-        const menuToggleBtn = document.getElementById('menuToggleBtn');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-
-        menuToggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (window.innerWidth > 768) {
-                // Desktop mode: Perkecil/perlebar margin konten
-                sidebar.classList.toggle('collapsed');
-                mainContent.classList.toggle('expanded');
-            } else {
-                // Mobile mode: Tarik drawer keluar/masuk
-                sidebar.classList.toggle('active');
-            }
-        });
-
-        // Tutup sidebar mobile secara otomatis jika pengguna klik area luar sidebar
-        document.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !menuToggleBtn.contains(e.target)) {
-                sidebar.classList.remove('active');
-            }
-        });
-
-        // SIDEBAR DROPDOWN INTERACTION
-        const dropdownToggleBtn = document.getElementById('dropdownToggleBtn');
-        dropdownToggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownToggleBtn.classList.toggle('active');
-        });
 
         // FUNGSI UNTUK MENGAMBIL DATA DARI FIREBASE FIRESTORE
         async function ambilDataPostingan() {
@@ -1062,7 +229,7 @@
                     });
                 });
                 
-                jalankanFilterSistem(); // Jalankan penyaringan & render awal
+                jalankanFilterSistem(); 
                 inisialisasiSlider(); 
                 buatSidebarKategoriDinamis(); 
                 buatTagsDinamis();            
@@ -1078,7 +245,7 @@
         }
         ambilDataPostingan();
 
-        // FUNGSI OTOMATISASI FORMAT TANGGAL UPLOAD
+        // FORMAT TANGGAL
         function formatWaktuUpload(tanggalUpload) {
             const sekarang = new Date();
             const selisihDetik = Math.floor((sekarang - tanggalUpload) / 1000);
@@ -1094,11 +261,12 @@
             return tanggalUpload.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
         }
 
-        // GENERATE MENU KATEGORI DI SIDEBAR SECARA OTOMATIS (DENGAN PROTEKSI DATA NULL/EMPTY)
+        // GENERATE KATEGORI DI SIDEBAR
         function buatSidebarKategoriDinamis() {
             const sidebarSubmenu = document.getElementById('sidebarSubmenu');
-            const setKategori = new Set();
+            if(!sidebarSubmenu) return; // Mencegah error jika elemen belum ada
 
+            const setKategori = new Set();
             mockVideos.forEach(video => {
                 if (video.category && video.category.toString().trim() !== "") {
                     setKategori.add(video.category.toString().trim());
@@ -1113,8 +281,7 @@
                 li.innerHTML = `<a href="#">${kategori}</a>`;
                 
                 li.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                    e.preventDefault(); e.stopPropagation();
                     
                     document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
                     document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
@@ -1125,60 +292,53 @@
                     document.getElementById('gridSectionTitle').textContent = `Kategori: ${kategori}`;
                     jalankanFilterSistem();
 
-                    if (window.innerWidth <= 768) {
-                        sidebar.classList.remove('active');
-                    }
+                    const sidebar = document.getElementById('sidebar');
+                    if (window.innerWidth <= 768 && sidebar) sidebar.classList.remove('active');
                 });
                 sidebarSubmenu.appendChild(li);
             });
         }
 
-        // Event Listener Tombol Navigasi Menu Utama Terhubung Secara Modular Aman
-        document.getElementById('btnBeranda').addEventListener('click', (e) => {
+        // AMANKAN EVENT LISTENER FILTER SIDEBAR (Mencegah Crash jika tombol tidak ada di layout.js)
+        document.getElementById('menuBeranda')?.addEventListener('click', (e) => {
             e.preventDefault();
             document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
-            document.getElementById('menuBeranda').classList.add('active');
+            e.currentTarget.classList.add('active');
             
-            kategoriAktif = 'Semua';
-            tagAktif = 'Semua';
-            negaraAktif = 'Global';
-            sortMode = 'Terbaru';
-            expandingInput.value = '';
-            
+            kategoriAktif = 'Semua'; tagAktif = 'Semua'; negaraAktif = 'Global'; sortMode = 'Terbaru';
+            if(expandingInput) expandingInput.value = '';
             document.getElementById('gridSectionTitle').textContent = `Video & Berita Terbaru`;
             
-            buatTagsDinamis(); 
-            jalankanFilterSistem();
+            buatTagsDinamis(); jalankanFilterSistem();
         });
 
-        document.getElementById('btnPopuler').addEventListener('click', (e) => {
+        document.getElementById('menuPopuler')?.addEventListener('click', (e) => {
             e.preventDefault();
             document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
-            document.getElementById('menuPopuler').classList.add('active');
+            e.currentTarget.classList.add('active');
 
             sortMode = 'Populer';
             document.getElementById('gridSectionTitle').textContent = `Trending Videos`;
             jalankanFilterSistem();
         });
 
-        document.getElementById('btnMostLiked').addEventListener('click', (e) => {
+        document.getElementById('menuMostLiked')?.addEventListener('click', (e) => {
             e.preventDefault();
             document.querySelectorAll('#sidebarSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu .sidebar-item').forEach(item => item.classList.remove('active'));
-            document.getElementById('menuMostLiked').classList.add('active');
+            e.currentTarget.classList.add('active');
 
             sortMode = 'MostLiked';
             document.getElementById('gridSectionTitle').textContent = `Most Liked Videos`;
             jalankanFilterSistem();
 
-            if (window.innerWidth <= 768) {
-                sidebar.classList.remove('active');
-            }
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth <= 768 && sidebar) sidebar.classList.remove('active');
         });
 
-        // GENERATE TOP 20 TAGS TERPOPULER & NEGARA DI BAGIAN BAWAH
+        // GENERATE TOP TAGS & NEGARA
         function buatTagsDinamis() {
             const categoryContainer = document.getElementById('categoryTagsContainer');
             const countryContainer = document.getElementById('countryTagsContainer');
@@ -1211,8 +371,7 @@
                 pill.addEventListener('click', () => {
                     document.querySelectorAll('#categoryTagsContainer .tag-pill').forEach(p => p.classList.remove('active'));
                     pill.classList.add('active');
-                    tagAktif = tag;
-                    jalankanFilterSistem();
+                    tagAktif = tag; jalankanFilterSistem();
                 });
                 categoryContainer.appendChild(pill);
             });
@@ -1232,8 +391,7 @@
                 pill.addEventListener('click', () => {
                     document.querySelectorAll('#countryTagsContainer .tag-pill').forEach(p => p.classList.remove('active'));
                     pill.classList.add('active');
-                    negaraAktif = negara;
-                    jalankanFilterSistem();
+                    negaraAktif = negara; jalankanFilterSistem();
                 });
                 countryContainer.appendChild(pill);
             });
@@ -1246,17 +404,13 @@
         const sliderNext = document.getElementById('sliderNext');
         const heroSliderContainer = document.getElementById('heroSliderContainer');
         
-        let currentSlide = 0;
-        let sliderVideos = [];
-        let autoPlaySlider;
+        let currentSlide = 0; let sliderVideos = []; let autoPlaySlider;
         
         function inisialisasiSlider() {
-            sliderVideos = mockVideos.slice(0, 5); // Ambil 5 teratas untuk slider
+            sliderVideos = mockVideos.slice(0, 5); 
             if (sliderVideos.length === 0) return;
 
-            sliderTrack.innerHTML = '';
-            sliderDots.innerHTML = '';
-            currentSlide = 0;
+            sliderTrack.innerHTML = ''; sliderDots.innerHTML = ''; currentSlide = 0;
             
             sliderVideos.forEach((video, index) => {
                 const slide = document.createElement('div');
@@ -1266,19 +420,13 @@
                 const playBtn = document.createElement('button');
                 playBtn.className = 'hero-play-btn';
                 playBtn.innerHTML = `<svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>`;
-                playBtn.addEventListener('click', () => {
-                    window.location.href = `playground.html?id=${video.id}`;
-                });
+                playBtn.addEventListener('click', () => { window.location.href = `playground.html?id=${video.id}`; });
                 
-                slide.appendChild(playBtn);
-                sliderTrack.appendChild(slide);
+                slide.appendChild(playBtn); sliderTrack.appendChild(slide);
                 
                 const dot = document.createElement('div');
                 dot.className = `dot ${index === 0 ? 'active' : ''}`;
-                dot.addEventListener('click', () => {
-                    currentSlide = index;
-                    updateSlider();
-                });
+                dot.addEventListener('click', () => { currentSlide = index; updateSlider(); });
                 sliderDots.appendChild(dot);
             });
 
@@ -1289,39 +437,17 @@
         function updateSlider() {
             if (sliderVideos.length === 0) return;
             sliderTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
-            document.querySelectorAll('.slider-dots .dot').forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentSlide);
-            });
+            document.querySelectorAll('.slider-dots .dot').forEach((dot, index) => { dot.classList.toggle('active', index === currentSlide); });
         }
-        function nextSlide() {
-            if (sliderVideos.length === 0) return;
-            currentSlide = (currentSlide + 1) % sliderVideos.length;
-            updateSlider();
-        }
-        function prevSlide() {
-            if (sliderVideos.length === 0) return;
-            currentSlide = (currentSlide - 1 + sliderVideos.length) % sliderVideos.length;
-            updateSlider();
-        }
-        sliderNext.addEventListener('click', nextSlide);
-        sliderPrev.addEventListener('click', prevSlide);
+        function nextSlide() { if (sliderVideos.length === 0) return; currentSlide = (currentSlide + 1) % sliderVideos.length; updateSlider(); }
+        function prevSlide() { if (sliderVideos.length === 0) return; currentSlide = (currentSlide - 1 + sliderVideos.length) % sliderVideos.length; updateSlider(); }
+        sliderNext.addEventListener('click', nextSlide); sliderPrev.addEventListener('click', prevSlide);
         
-        // Swipe Logic
-        let touchStartX = 0;
-        let touchEndX = 0;
+        let touchStartX = 0; let touchEndX = 0;
         heroSliderContainer.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
-        heroSliderContainer.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, {passive: true});
-        
-        function handleSwipe() {
-            const threshold = 50;
-            if (touchStartX - touchEndX > threshold) nextSlide();
-            if (touchEndX - touchStartX > threshold) prevSlide();
-        }
+        heroSliderContainer.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; if(touchStartX - touchEndX > 50) nextSlide(); if(touchEndX - touchStartX > 50) prevSlide(); }, {passive: true});
         heroSliderContainer.addEventListener('mouseenter', () => clearInterval(autoPlaySlider));
-        heroSliderContainer.addEventListener('mouseleave', () => {
-            clearInterval(autoPlaySlider);
-            autoPlaySlider = setInterval(nextSlide, 5000);
-        });
+        heroSliderContainer.addEventListener('mouseleave', () => { clearInterval(autoPlaySlider); autoPlaySlider = setInterval(nextSlide, 5000); });
 
         // RENDER VIDEO ITEMS TO GRID
         const videoGrid = document.getElementById('videoGrid');
@@ -1340,7 +466,6 @@
             videos.forEach(video => {
                 const videoCard = document.createElement('div');
                 videoCard.className = 'video-card';
-                
                 const totalView = parseFloat(video.views) || 0;
                 
                 videoCard.innerHTML = `
@@ -1348,9 +473,7 @@
                         <img src="${video.thumbnail}" alt="Thumbnail dari ${video.title}" class="video-thumbnail">
                         <div class="duration-tag">${video.duration}</div>
                         <div class="play-overlay">
-                            <div class="play-icon-circle">
-                                <svg width="24" height="24" fill="#0a0712" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
-                            </div>
+                            <div class="play-icon-circle"><svg width="24" height="24" fill="#0a0712" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg></div>
                         </div>
                     </div>
                     <div class="video-info">
@@ -1358,63 +481,40 @@
                         <div class="video-text">
                             <h3 class="video-title" title="${video.title}">${video.title}</h3>
                             <div class="video-meta">
-                                <p class="channel-name">
-                                    ${video.channel}
-                                    <span class="verified-badge" title="Terverifikasi">
-                                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
-                                    </span>
-                                </p>
-                                <div class="stats-row">
-                                    <span>${totalView.toLocaleString('id-ID')} ditonton</span>
-                                    <div class="dot-separator"></div>
-                                    <span>${formatWaktuUpload(video.uploadDate)}</span>
-                                </div>
+                                <p class="channel-name">${video.channel} <span class="verified-badge" title="Terverifikasi"><svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg></span></p>
+                                <div class="stats-row"><span>${totalView.toLocaleString('id-ID')} ditonton</span><div class="dot-separator"></div><span>${formatWaktuUpload(video.uploadDate)}</span></div>
                             </div>
                         </div>
                     </div>
                 `;
-                videoCard.addEventListener('click', () => {
-                    window.location.href = `playground.html?id=${video.id}`;
-                });
+                videoCard.addEventListener('click', () => { window.location.href = `playground.html?id=${video.id}`; });
                 videoGrid.appendChild(videoCard);
             });
         }
 
-        // FILTER COMBINATION SYSTEM
+        // FILTER SYSTEM
         function jalankanFilterSistem() {
-            const keyword = expandingInput.value.toLowerCase();
+            const keyword = expandingInput ? expandingInput.value.toLowerCase() : "";
             
             let hasilFilter = mockVideos.filter(video => {
                 const vTitle = video.title ? video.title.toLowerCase() : "";
                 const vChannel = video.channel ? video.channel.toLowerCase() : "";
                 const cocokKeyword = vTitle.includes(keyword) || vChannel.includes(keyword);
-                
-                const cocokKategori = (kategoriAktif === 'Semua' || 
-                    (video.category && video.category.toString().trim() === kategoriAktif));
-                    
-                const cocokTag = (tagAktif === 'Semua' || 
-                    (video.tags && Array.isArray(video.tags) && video.tags.map(t => t ? t.toString().trim() : "").includes(tagAktif)));
-                
+                const cocokKategori = (kategoriAktif === 'Semua' || (video.category && video.category.toString().trim() === kategoriAktif));
+                const cocokTag = (tagAktif === 'Semua' || (video.tags && Array.isArray(video.tags) && video.tags.map(t => t ? t.toString().trim() : "").includes(tagAktif)));
                 const negaraMurni = negaraAktif.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD00-\uDFFF]/g, '').trim();
-                const cocokNegara = (negaraAktif === 'Global' || 
-                    (video.country && video.country.toString().trim() === negaraMurni));
-                
+                const cocokNegara = (negaraAktif === 'Global' || (video.country && video.country.toString().trim() === negaraMurni));
                 return cocokKeyword && cocokKategori && cocokTag && cocokNegara;
             });
 
-            // Urutkan data berdasarkan mode yang dipilih
-            if (sortMode === 'Populer') {
-                hasilFilter.sort((a, b) => (parseFloat(b.views) || 0) - (parseFloat(a.views) || 0));
-            } else if (sortMode === 'MostLiked') {
-                hasilFilter.sort((a, b) => (parseFloat(b.likes) || 0) - (parseFloat(a.likes) || 0));
-            } else {
-                hasilFilter.sort((a, b) => b.uploadDate - a.uploadDate); // Default: Terbaru
-            }
+            if (sortMode === 'Populer') { hasilFilter.sort((a, b) => (parseFloat(b.views) || 0) - (parseFloat(a.views) || 0)); } 
+            else if (sortMode === 'MostLiked') { hasilFilter.sort((a, b) => (parseFloat(b.likes) || 0) - (parseFloat(a.likes) || 0)); } 
+            else { hasilFilter.sort((a, b) => b.uploadDate - a.uploadDate); }
             
             renderVideos(hasilFilter);
         }
 
-        expandingInput.addEventListener('input', jalankanFilterSistem);
+        if(expandingInput) expandingInput.addEventListener('input', jalankanFilterSistem);
     </script>
 </body>
 </html>
