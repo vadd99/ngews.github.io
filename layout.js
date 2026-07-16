@@ -2,6 +2,26 @@
 // 1. TEMPLATE HEADER & SIDEBAR LENGKAP
 // ==========================================
 const headerHTML = `
+    <style>
+        /* CSS Khusus untuk Menu Profil Melayang */
+        .user-menu-dropdown {
+            position: absolute; top: 56px; right: 0; 
+            background: var(--bg-surface); border: 1px solid var(--border-color); 
+            border-radius: 12px; padding: 16px; width: 240px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 200; 
+            display: flex; flex-direction: column; gap: 12px;
+            opacity: 0; visibility: hidden; transform: translateY(-10px);
+            transition: var(--transition);
+        }
+        .user-menu-dropdown.active {
+            opacity: 1; visibility: visible; transform: translateY(0);
+        }
+        .user-email-text { font-size: 0.85rem; color: var(--text-main); font-weight: 500; word-break: break-all; text-align: center; }
+        .user-menu-divider { border: none; border-top: 1px solid var(--border-color); margin: 4px 0; }
+        .btn-logout { background: rgba(255, 71, 87, 0.1); color: #ff4757; border: 1px solid rgba(255, 71, 87, 0.3); padding: 10px 0; border-radius: 8px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+        .btn-logout:hover { background: #ff4757; color: #fff; box-shadow: 0 0 15px rgba(255, 71, 87, 0.4); }
+    </style>
+
     <header>
         <div class="header-left">
             <button class="menu-toggle" id="menuToggleBtn" aria-label="Toggle Navigation">
@@ -18,11 +38,22 @@ const headerHTML = `
                 </button>
             </div>
             
-            <!-- Tombol Login / Profil -->
-            <div id="userArea" style="margin-left: 12px;">
-                <button id="loginBtn" style="background:var(--accent); border:none; padding:8px 16px; border-radius:20px; color:#0a0712; font-weight:600; cursor:pointer;">
-                    Login
+            <!-- Area Profil / Login -->
+            <div id="userArea" style="margin-left: 16px; display: flex; align-items: center; position: relative;">
+                <button id="loginBtn" style="background:none; border:none; cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center; border-radius:50%; transition: transform 0.2s;">
+                    <!-- Ikon Default (Belum Login) -->
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="background-color: var(--bg-surface-hover); border-radius: 50%; padding: 4px;">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
                 </button>
+
+                <!-- Popup Menu (Hanya Muncul saat Avatar diklik) -->
+                <div id="userMenuDropdown" class="user-menu-dropdown">
+                    <div class="user-email-text" id="userEmailDisplay">Memuat...</div>
+                    <hr class="user-menu-divider">
+                    <button id="logoutBtn" class="btn-logout">Logout Akun</button>
+                </div>
             </div>
         </div>
     </header>

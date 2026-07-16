@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Platform Video - NGews</title>
     
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- IMPOR CSS GLOBAL (Header, Sidebar, Variables) -->
     <link rel="stylesheet" href="style.css">
     
     <style>
@@ -169,14 +167,11 @@
 </head>
 <body>
 
-    <!-- WADAH HEADER DARI LAYOUT.JS -->
     <div id="app-header"></div>
 
     <div class="app-container">
-        <!-- WADAH SIDEBAR DARI LAYOUT.JS -->
         <div id="app-sidebar"></div>
 
-        <!-- MAIN CONTENT (Dibungkus agar menyesuaikan sidebar saat dibuka/ditutup) -->
         <main id="mainContent">
             
             <div class="watch-container">
@@ -184,7 +179,6 @@
                     <a href="index.html">Beranda</a> <span>/</span> <a href="#" id="breadcrumbCategory">Kategori</a> <span>/</span> <span>Nonton</span>
                 </div>
 
-                <!-- VIDEO PLAYER -->
                 <div class="player-wrapper" id="videoPlayerWrapper">
                     <div id="playerContainer" style="width: 100%; height: 100%;"></div>
                     
@@ -193,7 +187,6 @@
 
                     <div class="center-state-icon" id="centerStateIcon"></div>
 
-                    <!-- Kontrol Player Bawah Custom -->
                     <div class="player-controls">
                         <div class="timeline-container" id="timelineContainer">
                             <div class="timeline-progress" id="timelineProgress"></div>
@@ -212,12 +205,10 @@
                     </div>
                 </div>
 
-                <!-- DETAIL UTAMA -->
                 <div class="video-main-details">
                     <h1 class="video-title">Memuat Judul Video...</h1>
                 </div>
 
-                <!-- PROFILE CREATOR & ACTION BAR -->
                 <div class="creator-row-container">
                     <div class="creator-left-side">
                         <div class="creator-avatar-container">
@@ -244,7 +235,6 @@
                     </div>
                 </div>
 
-                <!-- KOMENTAR -->
                 <section class="comments-section">
                     <div class="comments-header"><h3 class="comments-title">Diskusi <span class="comments-count-badge" id="commentCount">0</span></h3></div>
                     <div class="comment-input-area">
@@ -277,16 +267,23 @@
         </main>
     </div>
 
-    <!-- SCRIPT FIREBASE SECARA MODULAR -->
     <script type="module">
-        // 1. RENDER LAYOUT DARI EXTERNAL FILE (HEADER & SIDEBAR)
-        import { renderLayout } from './layout.js';
-        renderLayout();
-
-        // 2. FIREBASE & LOGIKA PLAYER
+        // ==========================================
+        // 1. IMPORT MODULE (SEMUA DIJADIKAN SATU DI ATAS)
+        // ==========================================
+        import { renderLayout, isiSubmenuKategori } from './layout.js';
+        import { loginGoogle, cekStatusLogin, logoutGoogle } from './auth.js';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // ==========================================
+        // 2. RENDER LAYOUT AWAL
+        // ==========================================
+        renderLayout();
+
+        // ==========================================
+        // 3. INISIALISASI FIREBASE (Cukup Satu Kali)
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyA8-TN3r2KNL-XEHZ5lF3-rkVyj2qQe9so",
             authDomain: "ngews-web.firebaseapp.com",
@@ -295,10 +292,62 @@
             messagingSenderId: "1952425136",
             appId: "1:1952425136:web:3267816a6b05772d688775"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // ==========================================
+        // 4. LOGIKA AUTENTIKASI (LOGIN/LOGOUT UI)
+        // ==========================================
+        const defaultAvatarSVG = `
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="background-color: var(--bg-surface-hover); border-radius: 50%; padding: 4px;">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        `;
+
+        cekStatusLogin((user) => {
+            const loginBtn = document.getElementById('loginBtn');
+            const userMenuDropdown = document.getElementById('userMenuDropdown');
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (loginBtn) {
+                if (user) {
+                    loginBtn.innerHTML = `<img src="${user.photoURL}" style="width:34px; height:34px; border-radius:50%; object-fit: cover; border: 1px solid var(--border-color);">`;
+                    loginBtn.title = "Profil Saya";
+                    if (userEmailDisplay) userEmailDisplay.textContent = user.email;
+
+                    loginBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (userMenuDropdown) userMenuDropdown.classList.toggle('active');
+                    };
+
+                    if (logoutBtn) {
+                        logoutBtn.onclick = () => {
+                            if (userMenuDropdown) userMenuDropdown.classList.remove('active');
+                            logoutGoogle();
+                        };
+                    }
+
+                    document.addEventListener('click', (e) => {
+                        if (userMenuDropdown && userMenuDropdown.classList.contains('active')) {
+                            if (!userMenuDropdown.contains(e.target) && !loginBtn.contains(e.target)) {
+                                userMenuDropdown.classList.remove('active');
+                            }
+                        }
+                    });
+                } else {
+                    loginBtn.innerHTML = defaultAvatarSVG;
+                    loginBtn.title = "Klik untuk Login";
+                    if (userMenuDropdown) userMenuDropdown.classList.remove('active');
+                    loginBtn.onclick = () => loginGoogle().catch(err => console.error(err));
+                }
+            }
+        });
+
+        // ==========================================
+        // 5. LOGIKA VIDEO PLAYER & DATABASE FIREBASE
+        // ==========================================
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('id');
 
@@ -410,8 +459,12 @@
                     videoTitleEl.textContent = "Video tidak ditemukan di Cloud Database.";
                 }
 
+                // Ambil daftar video untuk bagian 'Related Videos'
                 const listSnapshot = await getDocs(collection(db, "videos"));
                 allVideos = [];
+                // Set penampung kategori untuk Sidebar
+                const setKategori = new Set();
+
                 listSnapshot.forEach((doc) => {
                     const d = doc.data();
                     allVideos.push({
@@ -419,9 +472,16 @@
                         category: d.category || "Berita", duration: d.duration || "00:00",
                         uploadDate: d.uploadDate ? d.uploadDate.toDate() : new Date()
                     });
+                    if (d.category) setKategori.add(d.category);
                 });
 
                 renderVideos(allVideos.filter(v => v.id !== videoId));
+
+                // CATATAN: Panggil isiSubmenuKategori di sini jika datanya sudah tersedia
+                if (typeof isiSubmenuKategori === "function") {
+                    isiSubmenuKategori(Array.from(setKategori));
+                }
+
             } catch (error) {
                 console.error("Gagal memuat data video dari Firebase Firestore:", error);
             }
@@ -525,8 +585,12 @@
             });
         }
 
+        // Panggil fungsi utama
         muatHalamanVideo();
 
+        // ==========================================
+        // 6. LOGIKA KOMENTAR
+        // ==========================================
         const commentInput = document.getElementById('commentInput');
         const commentForm = document.getElementById('commentForm');
         const commentCancelBtn = document.getElementById('commentCancelBtn');
@@ -564,7 +628,6 @@
         });
     </script>
 
-    <!-- LOGIKA INTERAKSI KONTROL AKSI (LIKE, DISLIKE, FOLLOW, SAVE) -->
     <script>
         const followBtn = document.getElementById('followBtn');
         let isFollowing = false;
